@@ -1,0 +1,77 @@
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:py="http://genshi.edgewall.org/"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    lang="en"
+    py:strip="">
+
+<head py:match="head" py:attrs="select('@*')">
+
+    <link type="text/css" href="/static/css/master.css" rel="stylesheet"/>
+
+    <script src="/static/js/jquery.js" type="text/javascript"></script>
+    <script src="/static/js/master.js" type="text/javascript"></script>
+
+    <meta name="description" content="${site_description}" />
+
+    <title>${title}</title>
+
+    <!--inserts all the header crap from the child-->
+    <meta py:replace="select('*|text()')" />
+
+</head> 
+
+<body py:match="body" py:attrs="select('@*')">
+
+<div id="page_wrapper">
+
+    <div id="header">
+        <div style="float:left;margin-top:2px;">		
+            <a href="/">
+                <img src="/static/images/smarttypes_tree_tiny.jpg" alt="${site_name}: ${site_mantra}"/>
+            </a>
+        </div>
+        <div style="float:left;margin-top:2px;">
+            <a href="/">
+                <img src="/static/images/smarttypes_logo.png" style="border:none;margin-top:35px;" alt="${site_name}: ${site_mantra}"/>
+            </a>
+        </div>
+
+        <div style="float:right;text-align:right;">
+            <div style="margin-top:67px;">
+                <!--<a class="${'active' if active_tab == 'learn_more' else ''}" href="/learn_more">Learn more</a>-->
+                    <!--<span style="padding:0 5px;color:#cccccc; ">|</span>-->
+                <a class="${'active' if active_tab == 'about' else ''}" href="/about">about</a>
+            </div>
+        </div><!--links block-->
+
+        <div class="clear"></div>
+    </div><!--end header-->
+
+    <div id="page_body">
+        <!--crap from the child-->
+        <div py:replace="select('*|text()')"></div>
+        <div class="clear"></div>
+    </div>
+
+    <div id="footer">
+        <table style="width:100%;">
+            <tr>
+                <td style="width:33%;text-align:left;">
+                    logo by <a target="_blank" href="http://www.flickr.com/photos/doodledan/1354730208/">doodledan</a>
+                </td>
+
+                <td style="width:33%;text-align:center;">
+                </td>
+            
+                <td style="width:33%;text-align:right;color:#0000FF;">
+                    <a class="${'active' if active_tab == 'contact' else ''}" href="/contact">contact</a>
+                </td>
+            </tr>            
+        </table> 
+    </div> <!--end footer-->
+    
+</div> <!--page wrapper-->  
+
+</body>
+</html>

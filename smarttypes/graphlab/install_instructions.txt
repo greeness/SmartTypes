@@ -1,0 +1,68 @@
+
+**************
+*Instructions*
+**************
+
+http://bickson.blogspot.com/2011/04/yahoo-kdd-cup-using-graphlab.html
+
+
+*****************
+*Installing itpp*
+*****************
+
+http://bickson.blogspot.com/search/label/itpp
+
+$ sudo apt-get install --yes --force-yes automake autoconf libtool* gfortran  
+$ sudo apt-get install --yes --force-yes liblapack-dev
+$ export LDFLAGS="-L/usr/lib -lgfortran"
+$ cd ~/
+$ wget http://sourceforge.net/projects/itpp/files/itpp/4.2.0/itpp-4.2.tar.gz  
+$ tar xvzf itpp-4.2.tar.gz  
+$ cd itpp-4.2  
+$ ./autogen.sh  
+$ ./configure --without-fft --with-blas=/home/ubuntu/lapack-3.3.0/blas_LINUX.a --with-lapack=/home/ubuntu/lapack-3.3.0/lapack_LINUX.a CFLAGS=-fPIC CXXFLAGS=-fPIC CPPFLAGS=-fPIC  
+$ make  
+$ sudo make install 
+
+
+************************
+*Installing graphlabapi*
+************************
+
+$ hg clone https://graphlabapi.googlecode.com/hg/ graphlabapi
+$ cd graphlabapi/
+$ ./configure --bootstrap
+
+
+**********************
+*CMakeLists.txt edits*
+**********************
+
+$ vim CMakeLists.txt
+
+add following line below line 210:
+  link_directories(/usr/local/lib/)
+
+replace all instances of:
+  -mfpmath=sse -msse2
+
+ with
+
+  -march=pentium
+
+
+**********************
+*Build PMF*
+**********************
+
+$ cd ~/graphlabapi/release/demoapps/pmf
+$ make 
+
+
+**********************
+*Test*
+**********************
+
+$ ./pmf smalltest 0 --float=true --scheduler="round_robin(max_iterations=15)"
+
+

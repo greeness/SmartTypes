@@ -1,0 +1,114 @@
+
+/*everything*/
+
+    *{margin:0;padding:0;font-size:16px;}
+      
+/*root*/
+
+      #page_wrapper{font-family:arial,sans-serif;color:#666666;line-height:135%;}
+
+/*headers */
+    
+    h1,.h1, h2,.h2, h3,.h3, h4,.h4{font-weight:bold;margin:0 0 5px 0;color:#333333;}
+    h1,.h1{font-size:20px;}
+    h2,.h2{font-size:18px;}
+
+/*paragraphs*/
+    
+    p{margin:10px 15px;}  
+    
+/*lists*/    
+    
+    ol, ul{padding:0 0 0 0;margin:0 0;}
+    ol li, ul li{margin:0 0 10px 0;}
+    
+/*links*/
+    /*more red #990000, more orange #993300*/
+    a{color:#0000CC; text-decoration:none;}
+    a:hover{text-decoration:underline;}
+    a.active{text-decoration:underline;color:#cccccc;}
+    
+    #sub_nav a{font-size:13px;}
+    
+/*other stuff */
+
+    .clear{clear:both;line-height:0px;}
+    
+    img{border:none;}
+    
+    .blockquote{margin:30px 15px;}    
+    .blockquote blockquote{font-style:italic;}
+    .blockquote blockquote .quote{font-size:23px;font-weight:bold;}
+    .blockquote .attribute{text-align:right;margin-top:5px;}
+    
+    pre{color:red;}
+
+    fieldset{
+        margin:0 10px;
+        padding:15px 10px 12px 10px;
+        border:1px solid #cccccc;        
+    }
+
+    legend{
+        color:#333333;
+        font-weight:bold;
+        font-size:18px;
+        padding:0 5px;    
+    }
+    
+    .list_item {margin:20px;padding:5px; border:solid 2px #F0F0F0;}   
+    
+/*==============================
+master template
+==============================*/
+
+/*
+body{
+    border-top: solid 6px #999999;
+}*/
+
+#page_wrapper{
+    max-width:900px;
+    margin:0 auto 0 auto;
+}
+  
+#header{
+    padding:10px 5px 0px 5px;
+    border-bottom:1px solid #cccccc;
+}
+
+#page_body{
+    border-top:1px solid #cccccc;
+    border-bottom:1px solid #cccccc;
+    text-align:center;
+    max-width:800px;
+    margin:4px auto;
+    padding: 45px 20px;
+}  
+
+#footer{
+    padding:10px 5px 16px 5px;
+    margin:0 0;
+    border-top:solid 1px #cccccc;
+}
+
+/*==============================
+forms
+==============================*/
+
+.formfield td{text-align:left;padding-bottom:8px;}
+.formfield label {width:100px;padding:0 5px 0 0;}
+.formfield input{width:200px;padding:5px;border:solid 1px #cccccc;}
+
+.submit td{text-align:right;padding-bottom:5px;}
+.submit input{
+    color: #FFFFFF;
+    font-weight: normal;
+    padding: 4px 7px;
+    background-color:#333333;
+    cursor:pointer;
+}
+
+.submit input:hover{
+    background-color:#101010;
+}

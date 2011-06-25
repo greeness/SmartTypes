@@ -1,0 +1,6 @@
+*.pyc
+backups/
+docs/
+logs/
+static/wilson_resume.txt
+config.py
