@@ -30,26 +30,20 @@ from smarttypes.model.twitter_user import TwitterUser
 
 def write_data(following_dict, twitter_id_map, index_map, output_file):
     
-    dup_edges = {}
     test_file = open('initial', 'w')
     for i in sorted(index_map.keys()):
-        output_file.write("%s|%s\n" % (i, len(index_map.keys())))        
+        output_file.write("%s|%s\n" % (i, len(index_map.keys())))
+        following_index_ids = Set([twitter_id_map[x] for x in following_dict[index_map[i]]])
         for j in sorted(index_map.keys()):
-            value = 1 if j in [twitter_id_map[x] for x in following_dict[index_map[i]]] else 0
+            value = 1 if j in following_index_ids else 0
             output_file.write("%s\t%s\t%s\n" % (j, value, 1))
             test_file.write(str(value)+',')
-            
-            if (i, j) in dup_edges:
-                raise Exception('good - found a dup')
-            else:
-                dup_edges[(i, followie_id)] = True
-                
         test_file.write('\n')    
 
 
 if __name__ == "__main__":
     
-    args_dict = eval(sys.argv[1] if len(sys.argv) > 1 else "{'screen_name':'smarttypes'}")
+    args_dict = eval(sys.argv[1] if len(sys.argv) > 1 else "{'screen_name':'SmartTypes'}")
     screen_name = args_dict['screen_name']
 
     output_file = open('%s_kdd.txt' % screen_name, 'w')
@@ -58,14 +52,14 @@ if __name__ == "__main__":
     following_dict = {}
     following_dict[twitter_user.twitter_id] = twitter_user.following_ids
     print "starting collect all followers loop"
-    for following_user in twitter_user.following[:10]:
+    for following_user in twitter_user.following:
         
         if following_user.twitter_id not in following_dict:
             following_dict[following_user.twitter_id] = following_user.following_ids
             
-        #for following_following_user in following_user.following:
-            #if following_following_user.following_ids and following_following_user.twitter_id not in following_dict:
-                #following_dict[following_following_user.twitter_id] = following_following_user.following_ids
+        for following_following_user in following_user.following:
+            if following_following_user.following_ids and following_following_user.twitter_id not in following_dict:
+                following_dict[following_following_user.twitter_id] = following_following_user.following_ids
                     
         record_count = len(following_dict.keys())
         if record_count % 10000 == 0:
@@ -122,6 +116,7 @@ if __name__ == "__main__":
     pickle.dump(twitter_id_map, twitter_id_map_file)
     
     #write everything
+    print "about to write everything"
     write_data(whittled_following_dict, twitter_id_map, index_map, output_file)            
             
     print "All done!"

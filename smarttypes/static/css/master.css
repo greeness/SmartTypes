@@ -1,7 +1,7 @@
 
 /*everything*/
 
-    *{margin:0;padding:0;font-size:16px;}
+    *{margin:0;padding:0;font-size:18px;}
       
 /*root*/
 
@@ -26,7 +26,7 @@
     /*more red #990000, more orange #993300*/
     a{color:#0000CC; text-decoration:none;}
     a:hover{text-decoration:underline;}
-    a.active{text-decoration:underline;color:#cccccc;}
+    a.active{text-decoration:underline;color:#999999;}
     
     #sub_nav a{font-size:13px;}
     

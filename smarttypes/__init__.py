@@ -26,11 +26,11 @@ import model
 import controllers
 
 site_name = 'SmartTypes'
-site_mantra = 'social engagement and discovery'
+site_mantra = 'a tool for social discovery'
 default_title = '%s - %s' % (site_name, site_mantra)
 site_description = """
-Find, engage, and learn from target communities and community leaders.
-SmartTypes is a tool for social discovery.
+Find and learn from target communities and community leaders.
+Connect SmartTypes with your Twitter account, and we'll take it from there.
 """
 site_description = site_description.strip()
 

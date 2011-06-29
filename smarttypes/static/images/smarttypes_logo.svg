@@ -280,7 +280,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -325,7 +325,7 @@
          id="tspan2383"
          x="47.816803"
          y="84.069183"
-         style="font-size:17px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:0.67000002px;fill:#999999;fill-opacity:1;font-family:Purisa;-inkscape-font-specification:Purisa">social engagement and discovery</tspan></text>
+         style="font-size:17px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:0.67000002px;fill:#999999;fill-opacity:1;font-family:Purisa;-inkscape-font-specification:Purisa">a tool for social discovery</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:22px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:414.99986649%;letter-spacing:2.82999921px;fill:#545454;fill-opacity:1;stroke:none;font-family:Purisa;-inkscape-font-specification:Purisa Bold"

@@ -23,7 +23,7 @@ database = mongo_handle.database
 twitter_users_coll = database['twitter_users']
 twitter_groups_coll = database['twitter_groups']
 
-me = TwitterUser.by_screen_name('smarttypes')
+me = TwitterUser.by_screen_name('SmartTypes')
 
 
 

@@ -102,6 +102,11 @@ class MongoBaseModel(object):
         else:
             cls.collection().update({'_id':{'$in':ids}}, {'$set':name_value_dict}, upsert=False, multi=True)
             
+            
+    @classmethod
+    def bulk_delete(cls, ids, safe=True):
+        cls.collection().remove({'_id':{'$in':ids}}, safe=safe) 
+            
     
     @classmethod
     def resave_all(cls):

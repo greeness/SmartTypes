@@ -6,7 +6,7 @@ from smarttypes.utils.validation_utils import mk_valid_ascii_str
 from datetime import datetime, timedelta
 from types import NoneType
 import numpy, random, heapq
-
+from sets import Set
 
 class TwitterUser(MongoBaseModel):
         
@@ -74,6 +74,40 @@ class TwitterUser(MongoBaseModel):
                 return_list.append(user)
         return return_list
     
+    def save_following_ids(self, following_ids):
+        self.following_ids = list(Set(following_ids))
+        self.last_loaded_following_ids = datetime.now()
+        self.save()    
+        
+    def get_random_followie_id(self, not_in_this_list=[]):
+        random_index = random.randrange(0, len(self.following_ids)) 
+        random_id = self.following_ids[random_index]
+        if random_id in not_in_this_list:
+            return self.get_random_followie_id(not_in_this_list)
+        else:
+            return random_id
+        
+    def get_someone_in_my_network_to_load(self):
+        """
+        keep in mind that 'loading' a user means storing all the people they follow 
+        
+        we 'load' self, the people self follows, and the people they follow 
+        """
+        following_and_expired_list = self.following_and_expired
+        if following_and_expired_list:
+            return following_and_expired_list[0]
+        else:
+            tried_to_load_these_ids = []
+            for i in range(len(self.following_ids)):
+                random_following_id = self.get_random_followie_id(tried_to_load_these_ids)
+                random_following = TwitterUser.get_by_id(random_following_id)
+                random_following_following_and_expired_list = random_following.following_and_expired
+                if random_following_following_and_expired_list:
+                    return random_following_following_and_expired_list[0]
+                else:
+                    tried_to_load_these_ids.append(random_following_id)
+
+            
     #@property
     #def following_these_groups_inv(self):
         #i = 0
@@ -123,44 +157,6 @@ class TwitterUser(MongoBaseModel):
                 #user_following_score += self.following_these_groups[i] * following_user.followed_by_these_groups[i]
             #return_list.append((user_following_score, following_user.screen_name))
         #return return_list
-    
-    
-    def save_following_ids(self, following_ids):
-        self.following_ids = following_ids
-        self.last_loaded_following_ids = datetime.now()
-        self.save()    
-    
-        
-    def get_someone_in_my_network_to_load(self, level_one=True):
-        """
-        self's network is never perfect, we do as good as we can        
-        
-        we dig down two levels:
-         - level 1: people self follows
-         - level 2: people level 1 users follow
-        
-        keep in mind that 'loading' a user means storing all the people they 
-        follow, so we really getting 3 levels here, but only 2 levels are completely loaded
-        (meaning their following_ids list is populated)
-        """
-        following_and_expired_list = self.following_and_expired if level_one else []
-        if following_and_expired_list:
-            return following_and_expired_list[0]
-        else:
-            random_index = random.randrange(0, len(self.following_ids))
-            random_following = TwitterUser.get_by_id(self.following_ids[random_index])
-            random_following_following_and_expired_list = random_following.following_and_expired
-            if random_following_following_and_expired_list:
-                return random_following_following_and_expired_list[0]
-            else:
-                return self.get_someone_in_my_network_to_load(level_one=False)
-
-            
-    def monitor_these_user_ids(self):
-        """
-        return distinct list of 4990 ids
-        """
-        raise Exception('not working yet.')
     
         
     ##############################################
