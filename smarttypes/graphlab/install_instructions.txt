@@ -6,6 +6,12 @@
 http://bickson.blogspot.com/2011/04/yahoo-kdd-cup-using-graphlab.html
 
 
+*********************
+*c and c++ compilers*
+*********************
+$ sudo apt-get install gcc
+$ sudo apt-get install g++
+
 *****************
 *Installing itpp*
 *****************
@@ -29,6 +35,9 @@ $ sudo make install
 *Installing graphlabapi*
 ************************
 
+$ cd ~/
+$ sudo apt-get install mercurial
+$ sudo apt-get install zlib1g-dev 
 $ hg clone https://graphlabapi.googlecode.com/hg/ graphlabapi
 $ cd graphlabapi/
 $ ./configure --bootstrap
@@ -40,15 +49,8 @@ $ ./configure --bootstrap
 
 $ vim CMakeLists.txt
 
-add following line below line 210:
+add following line below link_libraries(itpp):
   link_directories(/usr/local/lib/)
-
-replace all instances of:
-  -mfpmath=sse -msse2
-
- with
-
-  -march=pentium
 
 
 **********************

@@ -29,8 +29,10 @@ site_name = 'SmartTypes'
 site_mantra = 'a tool for social discovery'
 default_title = '%s - %s' % (site_name, site_mantra)
 site_description = """
-Find and learn from target communities and community leaders.
-Connect SmartTypes with your Twitter account, and we'll take it from there.
+Connect SmartTypes with your Twitter account, and we'll take it from there. 
+We'll cluster the people you follow, the people they follow, and the people they follow.
+We'll cluster your twitter universe into natural communities, highlight the leaders of these communities, 
+and highlight the content these communities find interesting. 
 """
 site_description = site_description.strip()
 

@@ -134,6 +134,7 @@ def readAndWriteKddData(infile, outfile, testFlag, verbose):
     ''' read data then write binary format'''  
   
     # read data  
+    if verbose: print 'Starting'  
     userList, itemList, timeList, rateList = readKddData(infile, testFlag, verbose)  
     if verbose: print 'Converting list to numpy array'  
     # convert lists to numpy arrays  
@@ -149,7 +150,7 @@ def readAndWriteKddData(infile, outfile, testFlag, verbose):
 def main():  
     usage = "usage: %prog [options] arg"  
     parser = OptionParser(usage)  
-    parser.add_option("-i", "--infile", dest="infile",  help="input file name", default="smarttypes_kdd.txt") # fixme  
+    parser.add_option("-i", "--infile", dest="infile",  help="input file name", default="SmartTypes_kdd.txt") # fixme  
     parser.add_option("-o", "--outfile", dest="outfile",  help="output file name", default="smarttypes_pmf")  
     parser.add_option("-t", "--istest", action="store_true", dest="istest",  help="treat as test file (format is different)", default=False)  
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose")  

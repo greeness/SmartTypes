@@ -26,28 +26,28 @@ items_shape = (num_features, num_items)
 items_file = open('/home/timmyt/graphlabapi/release/demoapps/pmf/smarttypes_pmf_%s_binary_items.out' % num_features, 'rb')
 items_data = numpy.fromfile(file=items_file, dtype=float).reshape(items_shape)
 
-twitter_id_map_file = open('twitter_id_map.pickle', 'r')
-twitter_id_map = pickle.load(twitter_id_map_file)
-twitter_id_map_inv = dict((v,k) for k, v in twitter_id_map.iteritems())
+index_to_twitter_id_file = open('index_to_twitter_id.pickle', 'r')
+index_to_twitter_id_dict = pickle.load(index_to_twitter_id_file)
 
-test_file = open('after', 'w')
-A = numpy.dot(numpy.transpose(users_data), items_data)
-for i in range(len(A)):
-    for j in range(len(A[i])):
-        write_this = str(int(round(A[i][j])))
-        test_file.write(write_this+',')
-    test_file.write('\n')
+if True:
+    test_file = open('after', 'w')
+    A = numpy.dot(numpy.transpose(users_data), items_data) #the other way gives you a group adjancey graph i think
+    for i in range(len(A)):
+        for j in range(len(A[i])):
+            write_this = str(A[i][j])
+            test_file.write(write_this+',')
+        test_file.write('\n')
 
 
 #following_these_groups and followed_by_these_groups
-if num_users == num_items:
+#if num_users == num_items:
     
-    twitter_users = []
-    for i in range(0, num_users):
-        twitter_user = TwitterUser.get_by_id(twitter_id_map_inv[i])
-        twitter_user.following_these_groups = list(users_data[:,i])
-        twitter_user.followed_by_these_groups = list(items_data[:,i])
-        twitter_users.append(twitter_user)
+    #twitter_users = []
+    #for i in range(0, num_users):
+        #twitter_user = TwitterUser.get_by_id(twitter_id_map_inv[i])
+        #twitter_user.following_these_groups = list(users_data[:,i])
+        #twitter_user.followed_by_these_groups = list(items_data[:,i])
+        #twitter_users.append(twitter_user)
         #twitter_user.save()
         
     #for i in range(0, num_features):
