@@ -1,0 +1,6 @@
+*pyc
+*.wpr
+smarttypes/logs
+smarttypes/backups
+smarttypes/static/videos
+
