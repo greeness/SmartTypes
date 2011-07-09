@@ -1,22 +1,11 @@
 
 """
-take a twitter user graph and write to yahoo kdd format 
-
-see http://kddcup.yahoo.com/datasets.php for details on yahoo kdd format
-
-then we'll use read_kdd_data_write_graphlab_binary.py to get to graphlab_binary
-
-then we'll use graphlab
-
-then i need to figure out how to read the graphlab output
-
-if done from a remote location we need autossh
-
-http://serverfault.com/questions/254269/how-to-setup-autossh-tunnel-for-mongodb
-
-autossh -M 20000 -N -p 22 USER@LINODE1IP -L 27017/localhost/27017
-
+We're running this on a remote ec2 instance
 """
+
+#tunnel mongo traffic through ssh
+import subprocess
+subprocess.call('ssh timmyt@66.228.60.238 -N -f -L 27017:localhost:27017', shell=True)
 
 import sys, site, pickle
 from datetime import datetime, timedelta
