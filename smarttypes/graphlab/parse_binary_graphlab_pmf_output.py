@@ -3,7 +3,7 @@ import sys, site
 site.addsitedir('/home/timmyt/.virtualenvs/smarttypes/lib/python%s/site-packages' % sys.version[:3])
 sys.path.insert(0, '/home/timmyt/projects/smarttypes')
 
-import numpy, pickle
+import numpy, pickle, struct
 
 import smarttypes
 from smarttypes.utils.mongo_handle import MongoHandle
@@ -12,22 +12,25 @@ mongo_handle = MongoHandle(smarttypes.connection_string, smarttypes.database_nam
 MongoBaseModel.mongo_handle = mongo_handle
 
 from smarttypes.model.twitter_user import TwitterUser
-from smarttypes.model.twitter_group import TwitterGroup
+#from smarttypes.model.twitter_group import TwitterGroup
 
-num_users = 11
-num_items = 11
-num_features = 2
+#http://docs.python.org/library/struct.html
 
-users_shape = (num_features, num_users)
-users_file = open('/home/timmyt/graphlabapi/release/demoapps/pmf/smarttypes_pmf_%s_binary_users.out' % num_features, 'rb')
-users_data = numpy.fromfile(file=users_file, dtype=float).reshape(users_shape)
+#// FORMAT: M N K D (4 x ints = user, movies, time bins, feature width (dimension))
+#// MATRIX U ( M x D doubles)
+#// MATRIX V ( N x D doubles)
+#// MATRIX K ( K x D doubles - optional, only for tensor)
+#// TOTAL FILE SIZE: 4 ints + (M+N+K)*D - for tensor
+#// 4 ints + (M+N)*D - for matrix
+graphlab_output_file = open('smarttypes_pmf2.out', 'rb')
 
-items_shape = (num_features, num_items)
-items_file = open('/home/timmyt/graphlabapi/release/demoapps/pmf/smarttypes_pmf_%s_binary_items.out' % num_features, 'rb')
-items_data = numpy.fromfile(file=items_file, dtype=float).reshape(items_shape)
+num_users = struct.unpack('i', graphlab_output_file.read(4))[0]
+num_items = struct.unpack('i', graphlab_output_file.read(4))[0]
+num_times = struct.unpack('i', graphlab_output_file.read(4))[0]
+num_features = struct.unpack('i', graphlab_output_file.read(4))[0]
 
-index_to_twitter_id_file = open('index_to_twitter_id.pickle', 'r')
-index_to_twitter_id_dict = pickle.load(index_to_twitter_id_file)
+users_data = numpy.fromfile(file=graphlab_output_file, dtype=float, count=num_features*num_users).reshape((num_features, num_users))
+items_data = numpy.fromfile(file=graphlab_output_file, dtype=float, count=num_features*num_items).reshape((num_features, num_items))
 
 if True:
     test_file = open('after', 'w')
@@ -38,9 +41,10 @@ if True:
             test_file.write(write_this+',')
         test_file.write('\n')
 
-
-#following_these_groups and followed_by_these_groups
-#if num_users == num_items:
+        
+        
+##fix this stuff        
+#index_to_twitter_id_dict = pickle.load(open('index_to_twitter_id.pickle', 'r'))
     
     #twitter_users = []
     #for i in range(0, num_users):
