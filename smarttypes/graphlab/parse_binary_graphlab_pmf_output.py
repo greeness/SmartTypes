@@ -22,7 +22,7 @@ from smarttypes.model.twitter_user import TwitterUser
 #// MATRIX K ( K x D doubles - optional, only for tensor)
 #// TOTAL FILE SIZE: 4 ints + (M+N+K)*D - for tensor
 #// 4 ints + (M+N)*D - for matrix
-graphlab_output_file = open('smarttypes_pmf2.out', 'rb')
+graphlab_output_file = open('smarttypes_pmf.out', 'rb')
 
 num_users = struct.unpack('i', graphlab_output_file.read(4))[0]
 num_items = struct.unpack('i', graphlab_output_file.read(4))[0]
