@@ -37,7 +37,7 @@ if True:
     A = numpy.dot(numpy.transpose(users_data), items_data) #the other way gives you a group adjancey graph i think
     for i in range(len(A)):
         for j in range(len(A[i])):
-            write_this = str(round(A[i][j]))
+            write_this = str(int(round(A[i][j])))
             test_file.write(write_this+',')
         test_file.write('\n')
 
