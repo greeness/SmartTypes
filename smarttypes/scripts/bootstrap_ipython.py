@@ -18,10 +18,6 @@ from smarttypes.model.twitter_group import TwitterGroup
 from smarttypes.utils.mongo_handle import MongoHandle
 mongo_handle = MongoHandle(smarttypes.connection_string, smarttypes.database_name)
 MongoBaseModel.mongo_handle = mongo_handle
-database = mongo_handle.database
-
-twitter_users_coll = database['twitter_users']
-twitter_groups_coll = database['twitter_groups']
 
 me = TwitterUser.by_screen_name('SmartTypes')
 

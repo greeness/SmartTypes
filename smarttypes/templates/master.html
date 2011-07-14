@@ -38,12 +38,10 @@
         </div>
 
         <div style="float:right;text-align:right;">
-            <div style="margin-top:67px;">
-                <!--<a class="${'active' if active_tab == 'learn_more' else ''}" href="/learn_more">Learn more</a>-->
-                    <!--<span style="padding:0 5px;color:#cccccc; ">|</span>-->
-                <a class="${'active' if active_tab == 'about' else ''}" href="/about">about</a>
+            <div style="margin-top:63px;">
+                <a href="#">explore</a>
                     <span style="padding:0 5px;color:#cccccc; ">|</span>
-                <a href="https://github.com/smarttypes/SmartTypes" target="_blank">we're open</a>
+                <a href="#">sign in with twitter</a>
             </div>
         </div><!--links block-->
 
@@ -58,15 +56,16 @@
 
     <div id="footer">
         <table style="width:100%;">
-            <tr>
+            <tr>          
                 <td style="width:33%;text-align:left;">
-                    logo by <a target="_blank" href="http://www.flickr.com/photos/doodledan/1354730208/">doodledan</a>
+                    <a class="${'active' if active_tab == 'about' else ''}" href="/about">about</a>
                 </td>
 
                 <td style="width:33%;text-align:center;">
-                </td>
-            
-                <td style="width:33%;text-align:right;color:#0000FF;">
+                    <a href="https://github.com/smarttypes/SmartTypes" target="_blank">we're open</a>
+                </td>                
+                
+                <td style="width:33%;text-align:right;">
                     <a class="${'active' if active_tab == 'contact' else ''}" href="/contact">contact</a>
                 </td>
             </tr>            

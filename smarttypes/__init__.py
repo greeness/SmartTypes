@@ -31,8 +31,7 @@ default_title = '%s - %s' % (site_name, site_mantra)
 site_description = """
 Connect SmartTypes with your Twitter account, and we'll take it from there. 
 We'll cluster the people you follow, the people they follow, and the people they follow.
-We'll cluster your twitter universe into natural communities, highlight the leaders of these communities, 
-and highlight the content these communities find interesting. 
+We'll cluster your twitter universe into communities and highlight the content each community deems important.
 """
 site_description = site_description.strip()
 

@@ -11,8 +11,8 @@ from smarttypes.utils import web_monitor
 web_monitor.start(interval=1.0)
 web_monitor.track('/home/timmyt/projects/smarttypes/smarttypes/templates')
 
-from smarttypes.utils.postgres_handle import PostgresHandle
-from smarttypes.model.postgres_base_model import PostgresBaseModel
+from smarttypes.utils.mongo_handle import MongoHandle
+from smarttypes.model.mongo_base_model import MongoBaseModel
 
 urls = [
     (r'^$', smarttypes.controllers.home),
@@ -21,8 +21,8 @@ urls = [
 ]
 
 def application(environ, start_response):
-    postgres_handle = PostgresHandle(smarttypes.database_name)
-    PostgresBaseModel.postgres_handle = postgres_handle
+    mongo_handle = MongoHandle(smarttypes.connection_string, smarttypes.database_name)
+    MongoBaseModel.mongo_handle = mongo_handle
     
     path = environ.get('PATH_INFO', '').lstrip('/')
     for regex, controller in urls:
@@ -30,7 +30,7 @@ def application(environ, start_response):
         if match:
             request = Request(environ)
             try:                
-                status_code, response_headers, body = controller(request, postgres_handle)
+                status_code, response_headers, body = controller(request, mongo_handle)
                 start_response(status_code, response_headers)
                 return body
             except Exception, ex:

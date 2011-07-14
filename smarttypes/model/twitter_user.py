@@ -25,7 +25,7 @@ class TwitterUser(MongoBaseModel):
         'url':{'ok_types':[str, NoneType]},
         
         'last_loaded_following_ids':{'ok_types':[datetime], 'default':datetime(1970,1,1)},
-        'following_ids':{'ok_types':[list], 'default':[]},
+        'following_ids':{'ok_types':[list], 'default':[]},        
         
         'caused_an_error':{'ok_types':[datetime, NoneType]},
     }
@@ -54,17 +54,6 @@ class TwitterUser(MongoBaseModel):
     @property
     def following(self):
         return self.get_by_ids(self.following_ids)
-    
-    def following_following_ids(self):
-        following_ids = []
-        for following_user in self.following:     
-            if following_user.twitter_id not in following_ids:
-                following_ids.append(following_user.twitter_id)
-                
-            for following_following_id in following_user.following_ids:
-                if following_following_id not in following_ids:
-                    following_ids.append(following_following_id)
-        return following_ids
     
     @property
     def following_and_expired(self):

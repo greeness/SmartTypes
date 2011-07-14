@@ -24,7 +24,7 @@ MongoBaseModel.mongo_handle = mongo_handle
 from smarttypes.model.twitter_user import TwitterUser
 
 
-def mk_matrix(following_dict, twitter_id_map, index_map, debug=True):
+def mk_matrix(following_dict, twitter_id_map, index_map, debug=False):
     
     userList, itemList, timeList, rateList = [], [], [], []
     
@@ -91,20 +91,16 @@ if __name__ == "__main__":
     following_dict = {}
     following_dict[twitter_user.twitter_id] = twitter_user.following_ids
     print "Collect all followers"
-    for following_user in twitter_user.following[:10]:
-        
+    for following_user in twitter_user.following:
         if following_user.twitter_id not in following_dict:
             following_dict[following_user.twitter_id] = following_user.following_ids
-            
-        #for following_following_user in following_user.following:
-            #if following_following_user.following_ids and following_following_user.twitter_id not in following_dict:
-                #following_dict[following_following_user.twitter_id] = following_following_user.following_ids
-                
+        for following_following_user in following_user.following:
+            if following_following_user.following_ids and following_following_user.twitter_id not in following_dict:
+                following_dict[following_following_user.twitter_id] = following_following_user.following_ids
         record_count = len(following_dict.keys())
-        if record_count % 10000 == 0:
-            print record_count
+        if record_count % 2000 == 0:
+            print "%s records processed." % record_count
     print "Finshed collect all followies loop, %s records" % record_count 
-    
     
     we_have_dup_followie_ids = []
     unique_followie_ids = {}
@@ -114,6 +110,7 @@ if __name__ == "__main__":
         #check for dups
         if len(followie_ids) != len(Set(followie_ids)):
             we_have_dup_followie_ids.append(twitter_id)
+            
         whittled_following_dict[twitter_id] = []
         for followie_id in followie_ids:
             #only use followies that are also followers            

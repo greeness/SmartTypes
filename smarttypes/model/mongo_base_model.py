@@ -1,5 +1,5 @@
 from datetime import datetime
-from smarttypes.utils.validation_utils import mk_valid_ascii_str
+
 
 class MongoBaseModel(object):
     
@@ -22,7 +22,7 @@ class MongoBaseModel(object):
             return_dict['_id'] = getattr(self, self.primary_key_name)
             self._id = return_dict['_id']
         
-        #check types, convert unicode to str, maybe a default
+        #check types, maybe a default
         for property_name, options_dict in self.properties.items():
             
             property_value = getattr(self, property_name, None)
@@ -32,13 +32,7 @@ class MongoBaseModel(object):
                 property_value = options_dict['default']
                 setattr(self, property_name, property_value)
                 
-            property_type = type(property_value)
-            
-            #unicode to str
-            if property_type == unicode:
-                setattr(self, property_name, str(mk_valid_ascii_str(property_value)))
-                property_value = getattr(self, property_name)
-                property_type = type(property_value)            
+            property_type = type(property_value)        
             
             #the right type
             if property_type not in options_dict['ok_types']:
@@ -105,18 +99,12 @@ class MongoBaseModel(object):
             
     @classmethod
     def bulk_delete(cls, ids, safe=True):
-        cls.collection().remove({'_id':{'$in':ids}}, safe=safe) 
+        if ids == 'all':
+            cls.collection().remove({}, safe=safe) 
+        else:
+            cls.collection().remove({'_id':{'$in':ids}}, safe=safe) 
             
-    
-    @classmethod
-    def resave_all(cls):
-        """
-        helpful for when the schema changes
-        takes a long-ass time
-        """
-        #{'caused_an_error':{'$exists': False}}
-        for result in cls.collection().find():
-            cls(**result).save()    
+      
             
             
             
