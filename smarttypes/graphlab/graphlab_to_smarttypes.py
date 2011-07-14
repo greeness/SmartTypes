@@ -1,4 +1,12 @@
 
+"""
+We're running this on a remote ec2 instance
+"""
+
+#tunnel mongo traffic through ssh
+import subprocess
+subprocess.call('ssh timmyt@66.228.60.238 -N -f -L 27017:localhost:27017', shell=True)
+
 import sys, site
 site.addsitedir('/home/timmyt/.virtualenvs/smarttypes/lib/python%s/site-packages' % sys.version[:3])
 sys.path.insert(0, '/home/timmyt/projects/smarttypes')
