@@ -16,6 +16,8 @@ from smarttypes.model.mongo_base_model import MongoBaseModel
 
 urls = [
     (r'^$', smarttypes.controllers.home),
+    (r'explore/?$', smarttypes.controllers.explore),
+    (r'sign_in/?$', smarttypes.controllers.sign_in),
     (r'about/?$', smarttypes.controllers.about),
     (r'contact/?$', smarttypes.controllers.contact),
 ]

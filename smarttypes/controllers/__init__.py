@@ -13,13 +13,20 @@ def home(request):
     return WebResponse()
 
 @mongo_web_decorator()
+def explore(request):
+    return WebResponse()
+
+@mongo_web_decorator()
+def sign_in(request):
+    return WebResponse()
+
+@mongo_web_decorator()
 def about(request):
     return WebResponse()
 
 @mongo_web_decorator()
 def contact(request):
     return WebResponse()
-
 
 
     
