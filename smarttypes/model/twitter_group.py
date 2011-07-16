@@ -12,25 +12,45 @@ class TwitterGroup(MongoBaseModel):
         'group_adjacency':{'ok_types':[list]},
     }
     
-    
-    def get_significant_followers(self, significance_level=.4):        
+    def get_significant_followers(self, significance_level=.4, top_users=0):
+        from smarttypes.model.twitter_user import TwitterUser
         return_list = []
+        i = 0
         for score, user_id in sorted(self.followers, reverse=True):
-            if score >= significance_level:
-                return_list.append((score, user_id))
+            if score >= significance_level or (top_users and i <= top_users):
+                return_list.append((score, TwitterUser.get_by_id(user_id)))
             else:
                 break
+            i += 1
         return return_list
         
-    def get_significant_following(self, significance_level=.4):        
+    def get_significant_following(self, significance_level=.4, top_users=0):
+        from smarttypes.model.twitter_user import TwitterUser
         return_list = []
+        i = 0
         for score, user_id in sorted(self.following, reverse=True):
-            if score >= significance_level:
-                return_list.append((score, user_id))
+            if score >= significance_level or (top_users and i <= top_users):
+                return_list.append((score, TwitterUser.get_by_id(user_id)))
             else:
                 break
+            i += 1
         return return_list
         
+    
+    @classmethod
+    def get_significant_users_for_all_groups(cls):
+        """
+        return something like this
+        """
+        from smarttypes.model.twitter_user import TwitterUser
+        
+        return_dict = {}
+        for result in [cls.collection().find_one()]:
+            group = cls(**result)
+            return_dict[group.group_index] = (group, group.get_significant_following(top_users=5))
+        return return_dict
+            
+    
     @classmethod
     def by_root_id_and_index(cls, root_id, index):
         return cls(**cls.collection().find({'root_user_id':root_id, 'group_index':index})[0])
