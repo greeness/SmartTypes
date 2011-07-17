@@ -64,7 +64,7 @@ for i in range(num_features):
         following_score = items_data[i][j]
         
         group_followers.append((follower_score, user_id))
-        groups_following.append((following_score, user_id))
+        group_following.append((following_score, user_id))
         
         if user_id not in user_group_map:
             user_group_map[user_id] = ([follower_score], [following_score])
