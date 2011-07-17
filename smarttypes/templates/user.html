@@ -18,7 +18,7 @@
         <h1>${twitter_user.screen_name}</h1>
     
         <table border="1">
-            <tr py:for="top_group_tup in twitter_user.top_groups('hybrid', num_groups=5)">
+            <tr py:for="top_group_tup in twitter_user.top_groups('hybrid', num_groups=20)">
                 <td>${'%.2f' % top_group_tup[0]}</td>
                 <td>
                     <a href="/group?group_index=${top_group_tup[1].group_index}">

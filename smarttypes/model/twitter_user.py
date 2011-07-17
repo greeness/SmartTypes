@@ -31,6 +31,7 @@ class TwitterUser(MongoBaseModel):
         
         'following_groups':{'ok_types':[list, NoneType]},
         'followedby_groups':{'ok_types':[list, NoneType]},
+        'hybrid_groups':{'ok_types':[list, NoneType]},
     }
     
     RELOAD_FOLLOWING_IDS_THRESHOLD = timedelta(days=7)
@@ -115,7 +116,7 @@ class TwitterUser(MongoBaseModel):
             following_groups_dict = dict([(y,x) for x,y in self.following_groups])
             search_these_groups = []
             for score, group_id in self.followedby_groups:
-                hybrid_score = (following_groups_dict[group_id] + score) / 2
+                hybrid_score = following_groups_dict[group_id] * score
                 search_these_groups.append((hybrid_score, group_id))            
             
         return_list = []

@@ -48,10 +48,12 @@ A = numpy.dot(users_data, numpy.transpose(items_data))
 for i in range(num_features):
     following_groups = []
     followedby_groups = []
+    hybrid = []
     for j in range(num_features):
         following_groups.append((A[i][j], j))
         followedby_groups.append((A[j][i], j))
-    group_adjacency.append((following_groups, followedby_groups))
+        hybrid.append((A[i][j] * A[j][i], j))
+    group_adjacency.append((following_groups, followedby_groups, hybrid))
         
 #save group info
 index_to_twitter_id_dict = pickle.load(open('index_to_twitter_id.pickle', 'r'))
@@ -61,6 +63,7 @@ TwitterGroup.bulk_delete('all')
 for i in range(num_features):
     group_followers = []
     group_following = []
+    hybrid = []
     for j in range(num_items):
         user_id = index_to_twitter_id_dict[j]
         follower_score = users_data[i][j]
@@ -68,14 +71,16 @@ for i in range(num_features):
         
         group_followers.append((follower_score, user_id))
         group_following.append((following_score, user_id))
+        hybrid.append((following_score * following_score, user_id))
         
         if user_id not in user_group_map:
-            user_group_map[user_id] = ([(follower_score, i)], [(following_score, i)])
+            user_group_map[user_id] = ([(follower_score, i)], [(following_score, i)], [(following_score * follower_score, i)])
         else:
             user_group_map[user_id][0].append((follower_score, i))
             user_group_map[user_id][1].append((following_score, i))
+            user_group_map[user_id][2].append((following_score * follower_score, i))
 
-    TwitterGroup.upsert_group(i, group_followers, group_following, group_adjacency[i])
+    TwitterGroup.upsert_group(i, group_followers, group_following, hybrid, group_adjacency[i])
 print "Done creating groups."
     
 i = 0    
@@ -83,6 +88,7 @@ for user_id, following_followedby_tup in user_group_map.items():
     twitter_user = TwitterUser.get_by_id(user_id)
     twitter_user.following_groups = following_followedby_tup[0]
     twitter_user.followedby_groups = following_followedby_tup[1]
+    twitter_user.hybrid_groups = following_followedby_tup[2]
     twitter_user.save()
     if i % 1000 == 0: print "Done with %s users." % i
     i += 1
