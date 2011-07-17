@@ -104,7 +104,7 @@ class TwitterUser(MongoBaseModel):
     ##############################################
     ##group related stuff
     ##############################################
-    def top_groups(self, relationship, significance_level=.4, num_groups=0):
+    def top_groups(self, relationship, significance_level=0, num_groups=0):
         from smarttypes.model.twitter_group import TwitterGroup
         
         if relationship == self.FOLLOWING_GROUPS:
@@ -121,7 +121,7 @@ class TwitterUser(MongoBaseModel):
         return_list = []
         i = 0
         for score, group_id in sorted(search_these_groups, reverse=True):
-            if score >= significance_level or (num_groups and i <= num_groups):
+            if (significance_level and score >= significance_level) or (num_groups and i <= num_groups):
                 return_list.append((score, TwitterGroup.get_by_index(group_id)))
             else:
                 break

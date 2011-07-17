@@ -14,34 +14,7 @@
 <body>
 
     <div style="text-align:center;">
-
-        <h1>Group ${twitter_group.group_index}</h1>
-    
-        <h2>Following</h2>
-        <table border="1">
-            <tr py:for="top_user_tup in twitter_group.top_users('following')">
-                <td>${'%.2f' % top_user_tup[0]}</td>
-                <td>
-                    <a href="/user?user_id=${top_user_tup[1].twitter_id}">
-                        ${top_user_tup[1].screen_name}
-                    </a>
-                </td>
-                <td>${top_user_tup[1].description}</td>
-                <td>${top_user_tup[1].location_name}</td>
-            </tr>
-        </table>
-
-        
-        <h2>Followers</h2>
-        <table>
-            <tr py:for="top_user_tup in twitter_group.top_users('followers')">
-                <td>${'%.2f' % top_user_tup[0]}</td>
-                <td>${top_user_tup[1].screen_name}</td>
-                <td>${top_user_tup[1].description}</td>
-                <td>${top_user_tup[1].location_name}</td>
-            </tr>
-        </table>
-        
+        Still working on this.
     </div>
 
 </body>                                    

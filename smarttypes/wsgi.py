@@ -14,7 +14,6 @@ web_monitor.track('/home/timmyt/projects/smarttypes/smarttypes/templates')
 from smarttypes.utils.mongo_handle import MongoHandle
 from smarttypes.model.mongo_base_model import MongoBaseModel
 
-
 urls = [
     (r'^$', smarttypes.controllers.home),
     (r'explore/?$', smarttypes.controllers.explore),

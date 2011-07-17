@@ -19,7 +19,7 @@ class TwitterGroup(MongoBaseModel):
     FOLLOWEDBY_GROUPS = "followedby" #group is followedby these groups
     HYBRID = "hybrid"
     
-    def top_users(self, relationship, significance_level=.4, num_users=0):
+    def top_users(self, relationship, significance_level=0, num_users=0, just_ids=False):
         from smarttypes.model.twitter_user import TwitterUser
         
         if relationship == self.FOLLOWING:
@@ -36,14 +36,17 @@ class TwitterGroup(MongoBaseModel):
         return_list = []
         i = 0
         for score, user_id in sorted(search_these_users, reverse=True):
-            if score >= significance_level or (num_users and i <= num_users):
-                return_list.append((score, TwitterUser.get_by_id(user_id)))
+            if (significance_level and score >= significance_level) or (num_users and i <= num_users):
+                add_this = (score, user_id)
+                if not just_ids:
+                    add_this = (score, TwitterUser.get_by_id(user_id))
+                return_list.append(add_this)
             else:
                 break
             i += 1
         return return_list
         
-    def top_groups(self, relationship, significance_level=.4, num_groups=0):
+    def top_groups(self, relationship, significance_level=0, num_groups=0):
         if relationship == self.FOLLOWING_GROUPS:
             search_these_groups = self.following_groups
         if relationship == self.FOLLOWEDBY_GROUPS:
@@ -58,19 +61,21 @@ class TwitterGroup(MongoBaseModel):
         return_list = []
         i = 0
         for score, group_id in sorted(search_these_groups, reverse=True):
-            if score >= significance_level or (num_groups and i <= num_groups):
+            if (significance_level and score >= significance_level) or (num_groups and i <= num_groups):
                 return_list.append((score, TwitterGroup.get_by_index(group_id)))
             else:
                 break
             i += 1
         return return_list
     
-    def group_inferred_top_users(self, relationship, significance_level=.4, num_users=0):
+    def group_inferred_top_users(self, relationship, significance_level=0, num_users=0):
+        from smarttypes.model.twitter_user import TwitterUser
         users_dict = {}
-        for score_group_tup in self.top_groups(relationship, significance_level, 5):
-            for score_user_tup in self.top_users(relationship, significance_level, num_users):
+        score_user_id_tups = self.top_users(relationship, significance_level, num_users, True)
+        for score_group_tup in self.top_groups(relationship, significance_level, 3):
+            for score_user_tup in score_user_id_tups:
                 inferred_score = score_group_tup[0] * score_user_tup[0]
-                user_id = score_user_tup[1].twitter_id
+                user_id = score_user_tup[1]
                 if user_id in users_dict:
                     users_dict[user_id] += inferred_score
                 else:
@@ -80,7 +85,7 @@ class TwitterGroup(MongoBaseModel):
         return_list = []
         i = 0
         for score, user_id in sorted(search_these_users, reverse=True):
-            if score >= significance_level or (num_users and i <= num_users):
+            if (significance_level and score >= significance_level) or (num_users and i <= num_users):
                 return_list.append((score, TwitterUser.get_by_id(user_id)))
             else:
                 break

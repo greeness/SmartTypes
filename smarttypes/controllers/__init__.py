@@ -15,14 +15,7 @@ def home(request):
 
 @mongo_web_decorator()
 def explore(request):
-    #group_index = request.params['group_index']
-    group_index = random.randrange(200)
-    twitter_group = TwitterGroup.get_by_index(group_index)
-    return WebResponse(
-        return_dict={
-            'twitter_group':twitter_group,
-        }
-    )
+    return WebResponse()
 
 @mongo_web_decorator()
 def user(request):
