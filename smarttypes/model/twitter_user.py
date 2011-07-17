@@ -14,15 +14,15 @@ class TwitterUser(MongoBaseModel):
     primary_key_name = 'twitter_id'
     properties = {
         'twitter_id':{'ok_types':[int]},
-        'screen_name':{'ok_types':[str]},
+        'screen_name':{'ok_types':[str, unicode]},
         'twitter_account_created':{'ok_types':[datetime]},
         'favourites_count':{'ok_types':[int]},
         'protected':{'ok_types':[bool]},
         'following_count':{'ok_types':[int]},
         
-        'location_name':{'ok_types':[str, NoneType]},
-        'description':{'ok_types':[str, NoneType]},
-        'url':{'ok_types':[str, NoneType]},
+        'location_name':{'ok_types':[str, unicode, NoneType]},
+        'description':{'ok_types':[str, unicode, NoneType]},
+        'url':{'ok_types':[str, unicode, NoneType]},
         
         'last_loaded_following_ids':{'ok_types':[datetime], 'default':datetime(1970,1,1)},
         'following_ids':{'ok_types':[list], 'default':[]},        
