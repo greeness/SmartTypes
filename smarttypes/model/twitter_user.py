@@ -39,6 +39,7 @@ class TwitterUser(MongoBaseModel):
     
     FOLLOWING_GROUPS = "following" #user is following these groups
     FOLLOWEDBY_GROUPS = "followedby" #user is followedby these groups
+    HYBRID = "hybrid"
     
     @property
     def following(self):
@@ -102,7 +103,7 @@ class TwitterUser(MongoBaseModel):
 
     ##############################################
     ##group related stuff
-    ##############################################                
+    ##############################################
     def top_groups(self, relationship, significance_level=.4, num_groups=0):
         from smarttypes.model.twitter_group import TwitterGroup
         
@@ -110,35 +111,49 @@ class TwitterUser(MongoBaseModel):
             search_these_groups = self.following_groups
         if relationship == self.FOLLOWEDBY_GROUPS:
             search_these_groups = self.followedby_groups
-        
+        if relationship == self.HYBRID:
+            following_groups_dict = dict([(y,x) for x,y in self.following_groups])
+            search_these_groups = []
+            for score, group_id in self.followedby_groups:
+                hybrid_score = (following_groups_dict[group_id] + score) / 2
+                search_these_groups.append((hybrid_score, group_id))            
+            
         return_list = []
         i = 0
-        for score in search_these_groups:
+        for score, group_id in sorted(search_these_groups, reverse=True):
             if score >= significance_level or (num_groups and i <= num_groups):
-                return_list.append((score, TwitterGroup.get_by_index(i)))
+                return_list.append((score, TwitterGroup.get_by_index(group_id)))
             else:
                 break
             i += 1
-        return return_list  
+        return return_list
     
-    def group_inferred_following(self, num_users):
+    def group_inferred_following(self, num_users, just_ids=True):
         from smarttypes.model.twitter_group import TwitterGroup
         user_score_map = {}
-        i = 0
-        for following_group_score in self.following_groups:
-            for following_user_score, user_id in TwitterGroup.get_by_index(i).following:
-                if user_id in user_score_map:
+        for following_group_score, group_index in self.following_groups:
+            for following_user_score, user_id in TwitterGroup.get_by_index(group_index).following:
+                if user_id not in user_score_map:
                     user_score_map[user_id] = following_group_score * following_user_score
                 else:
                     user_score_map[user_id] += following_group_score * following_user_score
-            i += 1
         
         return_list = []
         score_user_list = [(y,x) for x,y in user_score_map.items()]
         for score, user_id in heapq.nlargest(num_users, score_user_list):
-            return_list.append(TwitterUser.get_by_id(user_id))
+            add_this = user_id
+            if not just_ids:
+                add_this = TwitterUser.get_by_id(user_id)
+            return_list.append(add_this)
         return return_list
         
+    def who_to_follow(self, num_users):
+        return_list = []
+        for user_id in self.group_inferred_following(num_users):
+            if user_id not in self.following_ids:
+                return_list.append(TwitterUser.get_by_id(user_id))
+        return return_list
+    
     
     ##############################################
     ##state changing methods

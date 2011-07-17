@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:py="http://genshi.edgewall.org/"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    lang="en">
+
+<xi:include href="master.html" />      
+<head>
+
+</head>                    
+
+<body>
+
+    <div style="text-align:center;">
+
+        <h1>${twitter_user.screen_name}</h1>
+    
+        <table border="1">
+            <tr py:for="top_group_tup in twitter_user.top_groups('hybrid', num_groups=5)">
+                <td>${'%.2f' % top_group_tup[0]}</td>
+                <td>
+                    <a href="/group?group_index=${top_group_tup[1].group_index}">
+                        ${top_group_tup[1].group_index}
+                    </a>
+                </td>                
+            </tr>
+        </table>
+        
+    </div>
+
+</body>                                    
+</html>
+

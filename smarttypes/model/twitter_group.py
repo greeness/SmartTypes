@@ -9,19 +9,27 @@ class TwitterGroup(MongoBaseModel):
         'group_index':{'ok_types':[int]},
         'followers':{'ok_types':[list]}, #list of tups: (score, id)
         'following':{'ok_types':[list]},
-        'group_adjacency':{'ok_types':[list]},
+        'following_groups':{'ok_types':[list]},
+        'followedby_groups':{'ok_types':[list]},
     }
     
     FOLLOWING = "following" #group is following these people
     FOLLOWERS = "followers" #group is followed by these people
+    HYBRID = "hybrid"
     
-    def top_users(self, ing_or_ers, significance_level=.4, num_users=0):
+    def top_users(self, relationship, significance_level=.4, num_users=0):
         from smarttypes.model.twitter_user import TwitterUser
         
-        if ing_or_ers == self.FOLLOWING:
+        if relationship == self.FOLLOWING:
             search_these_users = self.following
-        if ing_or_ers == self.FOLLOWERS:
+        if relationship == self.FOLLOWERS:
             search_these_users = self.followers
+        if relationship == self.HYBRID:
+            following_dict = dict([(y,x) for x,y in self.following])
+            search_these_users = []
+            for score, user_id in self.followers:
+                hybrid_score = (following_dict[user_id] + score) / 2
+                search_these_users.append((hybrid_score, user_id))
         
         return_list = []
         i = 0
@@ -54,7 +62,8 @@ class TwitterGroup(MongoBaseModel):
             'group_index': group_index,
             'followers': followers,
             'following': following,
-            'group_adjacency':group_adjacency,
+            'following_groups':group_adjacency[0],
+            'followedby_groups':group_adjacency[1],
         }
         twitter_group = cls(**properties)
         twitter_group.save()

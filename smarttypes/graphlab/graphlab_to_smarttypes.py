@@ -46,16 +46,18 @@ if False:
 group_adjacency = []
 A = numpy.dot(users_data, numpy.transpose(items_data))
 for i in range(num_features):
-    group_is_following = []
+    following_groups = []
+    followedby_groups = []
     for j in range(num_features):
-        group_is_following.append(A[i][j])
-    group_adjacency.append(group_is_following)
+        following_groups.append(A[i][j])
+        followedby_groups.append(A[j][i])
+    group_adjacency.append((following_groups, followedby_groups))
         
 #save group info
 index_to_twitter_id_dict = pickle.load(open('index_to_twitter_id.pickle', 'r'))
 user_group_map = {} #{'id':([following], [followedby])}
 
-#TwitterGroup.bulk_delete('all')
+TwitterGroup.bulk_delete('all')
 for i in range(num_features):
     group_followers = []
     group_following = []
@@ -68,12 +70,12 @@ for i in range(num_features):
         group_following.append((following_score, user_id))
         
         if user_id not in user_group_map:
-            user_group_map[user_id] = ([follower_score], [following_score])
+            user_group_map[user_id] = ([(follower_score, i)], [(following_score, i)])
         else:
-            user_group_map[user_id][0].append(follower_score)
-            user_group_map[user_id][1].append(following_score)
+            user_group_map[user_id][0].append((follower_score, i))
+            user_group_map[user_id][1].append((following_score, i))
 
-    #TwitterGroup.upsert_group(i, group_followers, group_following, group_adjacency[i])
+    TwitterGroup.upsert_group(i, group_followers, group_following, group_adjacency[i])
 print "Done creating groups."
     
 i = 0    
