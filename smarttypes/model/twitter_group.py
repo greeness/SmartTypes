@@ -54,7 +54,7 @@ class TwitterGroup(MongoBaseModel):
             'group_index': group_index,
             'followers': followers,
             'following': following,
-            'group_adjacency':group_adjacency[i],
+            'group_adjacency':group_adjacency,
         }
         twitter_group = cls(**properties)
         twitter_group.save()
