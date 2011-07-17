@@ -19,6 +19,7 @@ from smarttypes.model.mongo_base_model import MongoBaseModel
 mongo_handle = MongoHandle(smarttypes.connection_string, smarttypes.database_name)
 MongoBaseModel.mongo_handle = mongo_handle
 from smarttypes.model.twitter_group import TwitterGroup
+from smarttypes.model.twitter_user import TwitterUser
 
 graphlab_output_file = open('smarttypes_pmf.out', 'rb')
 
@@ -51,19 +52,36 @@ for i in range(num_features):
         
 #save group info
 index_to_twitter_id_dict = pickle.load(open('index_to_twitter_id.pickle', 'r'))
-users_following_groups = []
-groups_following_users = []
+user_group_map = {} #{'id':([following], [followedby])}
+
+TwitterGroup.bulk_delete('all')
 for i in range(num_features):
-    users_following = []
-    groups_following = []
+    group_followers = []
+    group_following = []
     for j in range(num_items):
         user_id = index_to_twitter_id_dict[j]
-        users_following.append((user_id, users_data[i][j]))
-        groups_following.append((user_id, items_data[i][j]))
-    users_following_groups.append(users_following)
-    groups_following_users.append(groups_following)
+        follower_score = users_data[i][j]
+        following_score = items_data[i][j]
+        
+        group_followers.append((follower_score, user_id))
+        groups_following.append((following_score, user_id))
+        
+        if user_id not in user_group_map:
+            user_group_map[user_id] = ([follower_score], [following_score])
+        else:
+            user_group_map[user_id][0].append(follower_score)
+            user_group_map[user_id][1].append(following_score)
 
-TwitterGroup.upsert_twitter_groups(1, users_following_groups, groups_following_users, group_adjacency)
+    TwitterGroup.upsert_groups(i, group_followers, group_following, group_adjacency[i])
 
+for user_id, following_followedby_tup in user_group_map.items():
+    twitter_user = TwitterUser.get(user_id)
+    twitter_user.following_groups = following_followedby_tup[0]
+    twitter_user.followedby_groups = following_followedby_tup[1]
+    twitter_user.save()
 
-
+    
+    
+    
+    
+    

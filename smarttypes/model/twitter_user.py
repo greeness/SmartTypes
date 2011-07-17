@@ -28,11 +28,32 @@ class TwitterUser(MongoBaseModel):
         'following_ids':{'ok_types':[list], 'default':[]},        
         
         'caused_an_error':{'ok_types':[datetime, NoneType]},
+        
+        'following_groups':{'ok_types':[list, NoneType]},
+        'followedby_groups':{'ok_types':[list, NoneType]},
     }
     
     RELOAD_FOLLOWING_IDS_THRESHOLD = timedelta(days=7)
     MAX_FOLLOWING_COUNT = 1000
     TRY_AGAIN_AFTER_FAILURE_THRESHOLD = timedelta(days=31)
+    
+    FOLLOWING_GROUPS = "following" #user is following these groups
+    FOLLOWEDBY_GROUPS = "followedby" #user is followedby these groups
+    
+    @property
+    def following(self):
+        return self.get_by_ids(self.following_ids)
+
+    ##############################################
+    ##related to get_someone_in_my_network_to_load
+    ##############################################    
+    @property
+    def following_and_expired(self):
+        return_list = []
+        for user in self.following:            
+            if user.should_we_query_this_user:
+                return_list.append(user)
+        return return_list
     
     @property
     def should_we_query_this_user(self):
@@ -49,25 +70,8 @@ class TwitterUser(MongoBaseModel):
     def no_recent_errors(self):
         if self.caused_an_error:
             return (datetime.now() - self.caused_an_error) >= self.TRY_AGAIN_AFTER_FAILURE_THRESHOLD
-        return True
+        return True    
     
-    @property
-    def following(self):
-        return self.get_by_ids(self.following_ids)
-    
-    @property
-    def following_and_expired(self):
-        return_list = []
-        for user in self.following:            
-            if user.should_we_query_this_user:
-                return_list.append(user)
-        return return_list
-    
-    def save_following_ids(self, following_ids):
-        self.following_ids = list(Set(following_ids))
-        self.last_loaded_following_ids = datetime.now()
-        self.save()    
-        
     def get_random_followie_id(self, not_in_this_list=[]):
         random_index = random.randrange(0, len(self.following_ids)) 
         random_id = self.following_ids[random_index]
@@ -96,57 +100,53 @@ class TwitterUser(MongoBaseModel):
                 else:
                     tried_to_load_these_ids.append(random_following_id)
 
-            
-    #@property
-    #def following_these_groups_inv(self):
-        #i = 0
-        #return_list = []
-        #for group_score in self.following_these_groups:
-            #return_list.append((group_score, i))
-            #i += 1
-        #return return_list
-            
-    #@property
-    #def followed_by_these_groups_inv(self):
-        #i = 0
-        #return_list = []
-        #for group_score in self.followed_by_these_groups:
-            #return_list.append((group_score, i))
-            #i += 1
-        #return return_list
-            
+    ##############################################
+    ##group related stuff
+    ##############################################                
+    def top_groups(self, relationship, significance_level=.4, num_groups=0):
+        from smarttypes.model.twitter_group import TwitterGroup
+        
+        if relationship == self.FOLLOWING_GROUPS:
+            search_these_groups = self.following_groups
+        if relationship == self.FOLLOWEDBY_GROUPS:
+            search_these_groups = self.followedby_groups
+        
+        return_list = []
+        i = 0
+        for score in search_these_groups:
+            if score >= significance_level or (num_groups and i <= num_groups):
+                return_list.append((score, TwitterGroup.get_by_index(i)))
+            else:
+                break
+            i += 1
+        return return_list  
     
-    #def top_groups_following(self, number_groups):
-        #from smarttypes.model.twitter_group import TwitterGroup
-        #return_list = []
-        #for score, group_index in heapq.nlargest(number_groups, self.following_these_groups_inv):
-            #group = TwitterGroup.by_index_and_type(group_index, TwitterGroup.GROUP_TYPE_FOLLOWING)
-            #return_list.append((group, score))
-        #return return_list
+    def group_inferred_following(self, num_users):
+        from smarttypes.model.twitter_group import TwitterGroup
+        user_score_map = {}
+        i = 0
+        for following_group_score in self.following_groups:
+            for following_user_score, user_id in TwitterGroup.get_by_index(i).following:
+                if user_id in user_score_map:
+                    user_score_map[user_id] = following_group_score * following_user_score
+                else:
+                    user_score_map[user_id] += following_group_score * following_user_score
+            i += 1
+        
+        return_list = []
+        score_user_list = [(y,x) for x,y in user_score_map.items()]
+        for score, user_id in heapq.nlargest(num_users, score_user_list):
+            return_list.append(TwitterUser.get_by_id(user_id))
+        return return_list
         
     
-    #def top_groups_followed_by(self, number_groups):
-        #from smarttypes.model.twitter_group import TwitterGroup
-        #return_list = []
-        #for score, group_index in heapq.nlargest(number_groups, self.followed_by_these_groups_inv):
-            #group = TwitterGroup.by_index_and_type(group_index, TwitterGroup.GROUP_TYPE_FOLLOWED_BY)
-            #return_list.append((group, score))
-        #return return_list    
-    
-    
-    #def group_inferred_following(self, use_these_people):
-        #return_list = []
-        #for following_user in use_these_people:
-            #if not hasattr(following_user, 'followed_by_these_groups') or \
-               #not following_user.followed_by_these_groups:
-                #continue
-            
-            #user_following_score = 0
-            #for i in range(len(self.following_these_groups)):
-                #user_following_score += self.following_these_groups[i] * following_user.followed_by_these_groups[i]
-            #return_list.append((user_following_score, following_user.screen_name))
-        #return return_list
-    
+    ##############################################
+    ##state changing methods
+    ##############################################    
+    def save_following_ids(self, following_ids):
+        self.following_ids = list(Set(following_ids))
+        self.last_loaded_following_ids = datetime.now()
+        self.save()    
         
     ##############################################
     ##class methods
@@ -158,7 +158,6 @@ class TwitterUser(MongoBaseModel):
             return cls(**result)
         else:
             return None
-     
         
     @classmethod
     def upsert_from_api_user(cls, api_user):
