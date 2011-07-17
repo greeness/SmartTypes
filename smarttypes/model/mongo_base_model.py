@@ -70,6 +70,19 @@ class MongoBaseModel(object):
 
     
     @classmethod
+    def recently_altered(cls, altered_datetime, just_count=True):
+        results = cls.collection().find(
+            {'last_modified':{'$gte': altered_datetime}}
+        )
+        if just_count: 
+            return results.count()
+        else:
+            for result in results:
+                return_list.append(cls(**result))
+            return return_list
+    
+    
+    @classmethod
     def get_by_has_or_dont_have_attr(cls, attr_name, has_or_dont_have, just_count=False):
         return_list = []
         results = cls.collection().find({attr_name:{'$exists': has_or_dont_have}})

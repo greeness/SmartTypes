@@ -49,8 +49,8 @@ for i in range(num_features):
     following_groups = []
     followedby_groups = []
     for j in range(num_features):
-        following_groups.append(A[i][j])
-        followedby_groups.append(A[j][i])
+        following_groups.append((A[i][j], j))
+        followedby_groups.append((A[j][i], j))
     group_adjacency.append((following_groups, followedby_groups))
         
 #save group info
@@ -78,14 +78,14 @@ for i in range(num_features):
     TwitterGroup.upsert_group(i, group_followers, group_following, group_adjacency[i])
 print "Done creating groups."
     
-i = 0    
-for user_id, following_followedby_tup in user_group_map.items():
-    twitter_user = TwitterUser.get_by_id(user_id)
-    twitter_user.following_groups = following_followedby_tup[0]
-    twitter_user.followedby_groups = following_followedby_tup[1]
-    twitter_user.save()
-    if i % 1000 == 0: print "Done with %s users." % i
-    i += 1
+#i = 0    
+#for user_id, following_followedby_tup in user_group_map.items():
+    #twitter_user = TwitterUser.get_by_id(user_id)
+    #twitter_user.following_groups = following_followedby_tup[0]
+    #twitter_user.followedby_groups = following_followedby_tup[1]
+    #twitter_user.save()
+    #if i % 1000 == 0: print "Done with %s users." % i
+    #i += 1
     
     
     

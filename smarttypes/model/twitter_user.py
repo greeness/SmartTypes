@@ -172,7 +172,7 @@ class TwitterUser(MongoBaseModel):
         if result:
             return cls(**result)
         else:
-            return None
+            return None     
         
     @classmethod
     def upsert_from_api_user(cls, api_user):
