@@ -21,6 +21,8 @@ class MongoBaseModel(object):
                 raise Exception('BaseModel error: primary_key cant allow NoneType.')
             return_dict['_id'] = getattr(self, self.primary_key_name)
             self._id = return_dict['_id']
+        else:
+            raise Exception('You gotta set a primary key!')
         
         #check types, maybe a default
         for property_name, options_dict in self.properties.items():
@@ -117,7 +119,9 @@ class MongoBaseModel(object):
         else:
             cls.collection().remove({'_id':{'$in':ids}}, safe=safe) 
             
-      
             
+    @classmethod
+    def create_index(cls, key_or_list):
+        cls.collection().create_index(key_or_list)
             
             

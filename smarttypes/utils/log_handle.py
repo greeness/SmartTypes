@@ -3,9 +3,11 @@ import logging
 
 class LogHandle(object):
     
+    base_dir = "/home/timmyt/projects/smarttypes/smarttypes/logs/"
+    
     def __init__(self, filepath):
         logging.basicConfig(
-            filename=filepath,
+            filename=self.base_dir+filepath,
             level=logging.INFO,
             format='%(asctime)s %(levelname)s %(message)s')
         
