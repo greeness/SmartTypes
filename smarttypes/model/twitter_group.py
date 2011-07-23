@@ -1,6 +1,7 @@
 from smarttypes.model.mongo_base_model import MongoBaseModel
 from datetime import datetime, timedelta
 from smarttypes.utils import time_utils
+import string, heapq
 
 class TwitterGroup(MongoBaseModel):
         
@@ -21,7 +22,20 @@ class TwitterGroup(MongoBaseModel):
     FOLLOWEDBY_GROUPS = "followedby" #group is followedby these groups
     HYBRID = "hybrid"
     
-    def top_users(self, relationship, significance_level=0, num_users=0, just_ids=False):
+    @property
+    def name(self):
+        return "blah"
+        word_counts = {}
+        #for top_user in self.top_users(num_users=50):
+            #for word in top_user.description.split():
+                #if word in word_counts:
+                    #word_counts[word] += 1
+                #else:
+                    #word_counts[word] = 1
+        #word_counts = [(y,x) for x,y in word_counts.items()]
+        #return heapq.nlargest(10, word_counts)
+    
+    def top_users(self, relationship="hybrid", significance_level=0, num_users=0, just_ids=False):
         from smarttypes.model.twitter_user import TwitterUser
         
         if relationship == self.FOLLOWING:
@@ -29,11 +43,7 @@ class TwitterGroup(MongoBaseModel):
         if relationship == self.FOLLOWERS:
             search_these_users = self.followers
         if relationship == self.HYBRID:
-            following_dict = dict([(y,x) for x,y in self.following])
-            search_these_users = []
-            for score, user_id in self.followers:
-                hybrid_score = following_dict[user_id] * score
-                search_these_users.append((hybrid_score, user_id))
+            search_these_users = self.hybrid
         
         return_list = []
         i = 0
@@ -48,21 +58,17 @@ class TwitterGroup(MongoBaseModel):
             i += 1
         return return_list
         
-    def top_groups(self, relationship, significance_level=0, num_groups=0, reverse=True):
+    def top_groups(self, relationship="hybrid", significance_level=0, num_groups=0):
         if relationship == self.FOLLOWING_GROUPS:
             search_these_groups = self.following_groups
         if relationship == self.FOLLOWEDBY_GROUPS:
             search_these_groups = self.followedby_groups
         if relationship == self.HYBRID:
-            following_groups_dict = dict([(y,x) for x,y in self.following_groups])
-            search_these_groups = []
-            for score, group_id in self.followedby_groups:
-                hybrid_score = following_groups_dict[group_id] * score
-                search_these_groups.append((hybrid_score, group_id))            
+            search_these_groups = self.hybrid_groups
             
         return_list = []
         i = 0
-        for score, group_id in sorted(search_these_groups, reverse=reverse):
+        for score, group_id in sorted(search_these_groups, reverse=True):
             if (significance_level and score >= significance_level) or (num_groups and i <= num_groups):
                 return_list.append((score, TwitterGroup.get_by_index(group_id)))
             else:
@@ -70,7 +76,7 @@ class TwitterGroup(MongoBaseModel):
             i += 1
         return return_list
     
-    def group_inferred_top_users(self, relationship, significance_level=0, num_users=0):
+    def group_inferred_top_users(self, relationship="hybrid", significance_level=0, num_users=0):
         from smarttypes.model.twitter_user import TwitterUser
         compare_w_this_many_groups = 10
         
@@ -86,7 +92,7 @@ class TwitterGroup(MongoBaseModel):
 
         #what's unique about me?
         search_these_users = []
-        for score_user_tup in self.top_users(relationship, significance_level, 25, True):
+        for score_user_tup in self.top_users(relationship, significance_level, 40, True):
             user_id = score_user_tup[1]
             compare_to_total = users_dict[user_id] if user_id in users_dict else 0
             compare_to_avg = compare_to_total / compare_w_this_many_groups

@@ -105,7 +105,7 @@ class TwitterUser(MongoBaseModel):
     ##############################################
     ##group related stuff
     ##############################################
-    def top_groups(self, relationship, significance_level=0, num_groups=0):
+    def top_groups(self, relationship="hybrid", significance_level=0, num_groups=0):
         from smarttypes.model.twitter_group import TwitterGroup
         
         if relationship == self.FOLLOWING_GROUPS:
@@ -113,11 +113,7 @@ class TwitterUser(MongoBaseModel):
         if relationship == self.FOLLOWEDBY_GROUPS:
             search_these_groups = self.followedby_groups
         if relationship == self.HYBRID:
-            following_groups_dict = dict([(y,x) for x,y in self.following_groups])
-            search_these_groups = []
-            for score, group_id in self.followedby_groups:
-                hybrid_score = following_groups_dict[group_id] * score
-                search_these_groups.append((hybrid_score, group_id))            
+            search_these_groups = self.hybrid_groups    
             
         return_list = []
         i = 0

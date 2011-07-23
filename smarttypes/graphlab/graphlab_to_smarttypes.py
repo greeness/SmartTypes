@@ -82,7 +82,8 @@ for i in range(num_features):
 
     TwitterGroup.upsert_group(i, group_followers, group_following, hybrid, group_adjacency[i])
 print "Done creating groups."
-    
+
+TwitterUser.bulk_update('all', {'following_groups':None, 'followedby_groups':None, 'hybrid_groups':None,})
 i = 0    
 for user_id, following_followedby_tup in user_group_map.items():
     twitter_user = TwitterUser.get_by_id(user_id)
