@@ -8,8 +8,8 @@ from types import NoneType
 import numpy, random, heapq
 from sets import Set
 
-from smarttypes.utils.log_handle import LogHandle
-log_handle = LogHandle('twitter_user.log')
+#from smarttypes.utils.log_handle import LogHandle
+#log_handle = LogHandle('twitter_user.log')
 
 class TwitterUser(MongoBaseModel):
         
@@ -116,9 +116,9 @@ class TwitterUser(MongoBaseModel):
                 break
             i += 1
             
-        time_to_execute = datetime.now() - timer
-        log_handle.log("TwitterUser.top_groups took %s secs to run. significance_level: %s; num_groups: %s" % 
-                       (time_to_execute.seconds, significance_level, num_groups))
+        #time_to_execute = datetime.now() - timer
+        #log_handle.log("TwitterUser.top_groups took %s secs to run. significance_level: %s; num_groups: %s" % 
+                       #(time_to_execute.seconds, significance_level, num_groups))
         
         return return_list
     

@@ -2,8 +2,8 @@ from smarttypes.model.mongo_base_model import MongoBaseModel
 from datetime import datetime, timedelta
 from smarttypes.utils import time_utils
 import string, heapq
-from smarttypes.utils.log_handle import LogHandle
-log_handle = LogHandle('twitter_group.log')
+#from smarttypes.utils.log_handle import LogHandle
+#log_handle = LogHandle('twitter_group.log')
 
 class TwitterGroup(MongoBaseModel):
         
