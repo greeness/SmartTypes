@@ -11,30 +11,26 @@ from smarttypes.utils import web_monitor
 web_monitor.start(interval=1.0)
 web_monitor.track('/home/timmyt/projects/smarttypes/smarttypes/templates')
 
-from smarttypes.utils.mongo_handle import MongoHandle
-from smarttypes.model.mongo_base_model import MongoBaseModel
-
 urls = [
     (r'^$', smarttypes.controllers.home),
-    (r'explore/?$', smarttypes.controllers.explore),
+    (r'root_user/?$', smarttypes.controllers.root_user),
+    
     (r'user/?$', smarttypes.controllers.user),
     (r'group/?$', smarttypes.controllers.group),
-    (r'sign_in/?$', smarttypes.controllers.sign_in),
+    
+    (r'cluster_your_network/?$', smarttypes.controllers.cluster_your_network),
     (r'about/?$', smarttypes.controllers.about),
     (r'contact/?$', smarttypes.controllers.contact),
 ]
 
 def application(environ, start_response):
-    mongo_handle = MongoHandle(smarttypes.connection_string, smarttypes.database_name)
-    MongoBaseModel.mongo_handle = mongo_handle
-    
     path = environ.get('PATH_INFO', '').lstrip('/')
     for regex, controller in urls:
         match = re.search(regex, path)
         if match:
             request = Request(environ)
             try:                
-                status_code, response_headers, body = controller(request, mongo_handle)
+                status_code, response_headers, body = controller(request)
                 start_response(status_code, response_headers)
                 return body
             except Exception, ex:

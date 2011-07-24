@@ -14,8 +14,16 @@ def home(request):
     return WebResponse()
 
 @mongo_web_decorator()
-def explore(request):
-    return WebResponse()
+def root_user(request):
+    
+    screen_name = request.params['screen_name']
+    root_user = TwitterUser.by_screen_name(screen_name)    
+    return WebResponse(
+        return_dict={
+            'root_user':root_user,
+        }
+    )
+
 
 @mongo_web_decorator()
 def user(request):
@@ -33,10 +41,16 @@ def user(request):
         }
     )
 
+
 @mongo_web_decorator()
 def group(request):
-    group_index = int(request.params['group_index'])
-    twitter_group = TwitterGroup.get_by_index(group_index)
+    
+    if 'group_index' in request.params:
+        group_index = int(request.params['group_index'])
+        twitter_group = TwitterGroup.get_by_index(group_index)
+    else:
+        twitter_group = TwitterGroup.get_random_group()
+        
     return WebResponse(
         return_dict={
             'twitter_group':twitter_group,
@@ -46,7 +60,7 @@ def group(request):
 
 
 @mongo_web_decorator()
-def sign_in(request):
+def cluster_your_network(request):
     return WebResponse()
 
 @mongo_web_decorator()

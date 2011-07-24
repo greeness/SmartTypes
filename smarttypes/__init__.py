@@ -29,9 +29,9 @@ site_name = 'SmartTypes'
 site_mantra = 'a tool for social discovery'
 default_title = '%s - %s' % (site_name, site_mantra)
 site_description = """
-Connect SmartTypes with your Twitter account, and we'll take it from there. 
-We'll cluster the people you follow, the people they follow, and the people they follow.
-We'll cluster your twitter universe into niche communities, and highlight the content each niche deems important.
+Cluster your twitter universe into niche communities.
+Explore new lands, and meet new people.
+Learn what these unique cultures deem important.
 """
 site_description = site_description.strip()
 

@@ -9,7 +9,7 @@
 
 /*headers */
     
-    h1,.h1, h2,.h2, h3,.h3, h4,.h4{font-weight:bold;margin:0 0 5px 0;color:#333333;}
+    h1,.h1, h2,.h2, h3,.h3, h4,.h4{font-weight:bold;margin:0 20px 20px 20px;color:#333333;}
     h1,.h1{font-size:20px;}
     h2,.h2{font-size:18px;}
 
@@ -29,6 +29,11 @@
     a.active{color:#999999;}
     
     #sub_nav a{font-size:13px;}
+    
+/*tables*/
+    table.results{border-collapse:collapse;width:100%;}
+    table.results,table.results th,table.results td{border: 1px solid #cccccc;}
+    table.results th,table.results td{padding:10px;} 
     
 /*other stuff */
 
@@ -83,7 +88,7 @@ body{
     text-align:center;
     max-width:800px;
     margin:4px auto;
-    padding: 45px 20px;
+    padding: 55px 20px;
 }  
 
 #footer{

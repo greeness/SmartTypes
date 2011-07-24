@@ -85,7 +85,7 @@ class MongoBaseModel(object):
     
     
     @classmethod
-    def get_by_has_or_dont_have_attr(cls, attr_name, has_or_dont_have, just_count=False):
+    def get_by_has_attr(cls, attr_name, has_or_dont_have, just_count=True):
         return_list = []
         results = cls.collection().find({attr_name:{'$exists': has_or_dont_have}})
         if just_count: 

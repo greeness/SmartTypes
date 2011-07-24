@@ -38,10 +38,16 @@
         </div>
 
         <div style="float:right;text-align:right;">
-            <div style="margin-top:63px;">
-                <a href="/explore" class="${'active' if active_tab == 'explore' else ''}">explore</a>
+            <div style="margin-top:65px;">
+                <a href="/cluster_your_network" 
+                     class="${'active' if active_tab == 'cluster_your_network' else ''}">Cluster your twitter universe</a>
+                     
+                <span py:if="defined('root_user')" py:strip="">
                     <span style="padding:0 5px;color:#cccccc; ">|</span>
-                <a href="/sign_in" class="${'active' if active_tab == 'sign_in' else ''}">sign in with twitter</a>
+                    <a href="/root_user?screen_name=${root_user.screen_name}" 
+                         class="${'active' if active_tab in ['root_user', 'user', 'group'] else ''}">
+                        Root user: ${root_user.screen_name}</a>
+                </span>
             </div>
         </div><!--links block-->
 
@@ -58,15 +64,15 @@
         <table style="width:100%;">
             <tr>          
                 <td style="width:33%;text-align:left;">
-                    <a class="${'active' if active_tab == 'about' else ''}" href="/about">about</a>
+                    <a class="${'active' if active_tab == 'about' else ''}" href="/about">About</a>
                 </td>
 
                 <td style="width:33%;text-align:center;">
-                    <a href="https://github.com/smarttypes/SmartTypes" target="_blank">we're open</a>
+                    <a href="https://github.com/smarttypes/SmartTypes" target="_blank">We're open</a>
                 </td>                
                 
                 <td style="width:33%;text-align:right;">
-                    <a class="${'active' if active_tab == 'contact' else ''}" href="/contact">contact</a>
+                    <a class="${'active' if active_tab == 'contact' else ''}" href="/contact">Contact</a>
                 </td>
             </tr>            
         </table> 

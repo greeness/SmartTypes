@@ -110,7 +110,7 @@ class TwitterUser(MongoBaseModel):
         return_list = []
         i = 0
         for score, group_id in sorted(self.scores_groups, reverse=True):
-            if i <= num_groups:
+            if i <= num_groups and score > .001:
                 return_list.append((score, TwitterGroup.get_by_index(group_id)))
             else:
                 break
@@ -167,6 +167,12 @@ class TwitterUser(MongoBaseModel):
             return cls(**result)
         else:
             return None     
+        
+    @classmethod
+    def get_descriptions_tied_to_groups(cls, screen_name):
+        
+        users_tied_to_groups = []
+   
         
     @classmethod
     def upsert_from_api_user(cls, api_user):

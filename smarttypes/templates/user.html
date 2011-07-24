@@ -15,14 +15,21 @@
 
     <div style="text-align:center;">
 
-        <h1>${twitter_user.screen_name}</h1>
+        <h1>
+            ${twitter_user.screen_name} group membership
+        </h1>
     
-        <table border="1">
-            <tr py:for="top_group_tup in twitter_user.top_groups('hybrid', num_groups=20)">
-                <td>${'%.2f' % top_group_tup[0]}</td>
+        <table class="results">
+            <tr>
+                <th>Score</th>
+                <th>Tags</th>
+            </tr>        
+        
+            <tr py:for="top_group_tup in twitter_user.top_groups()">
+                <td>${'%.3f' % top_group_tup[0]}</td>
                 <td>
                     <a href="/group?group_index=${top_group_tup[1].group_index}">
-                        ${top_group_tup[1].name}
+                       ${top_group_tup[1].tag_cloud_display()}
                     </a>
                 </td>
             </tr>

@@ -15,11 +15,20 @@
 
     <div style="text-align:center;">
 
-        <h1>Group ${twitter_group.group_index}</h1>
+        <h1>
+            ${twitter_group.tag_cloud_display()}
+        </h1>
     
-        <table border="1">
-            <tr py:for="top_user_tup in twitter_group.top_users('hybrid', num_users=20)">
-                <td>${'%.2f' % top_user_tup[0]}</td>
+        <table class="results">
+            <tr>
+                <th>Score</th>
+                <th>Handle</th>
+                <th>Description</th>
+                <th>Location</th>
+                <th>Link</th>
+            </tr>
+            <tr py:for="top_user_tup in twitter_group.top_users()">
+                <td>${'%.3f' % top_user_tup[0]}</td>
                 <td>
                     <a href="/user?user_id=${top_user_tup[1].twitter_id}">
                         ${top_user_tup[1].screen_name}

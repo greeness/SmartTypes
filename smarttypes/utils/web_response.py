@@ -48,7 +48,7 @@ class WebResponse(object):
         
         self.return_dict['site_name'] = smarttypes.site_name
         self.return_dict['site_mantra'] = smarttypes.site_mantra 
-        self.return_dict['site_description'] = smarttypes.site_description 
+        self.return_dict['site_description'] = smarttypes.site_description
         
         template = loader.load(self.template_path)
         
