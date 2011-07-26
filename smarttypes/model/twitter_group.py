@@ -1,6 +1,6 @@
 from smarttypes.model.mongo_base_model import MongoBaseModel
 from datetime import datetime, timedelta
-from smarttypes.utils import time_utils
+from smarttypes.utils import time_utils, text_parsing
 import re, string, heapq, random, collections, numpy
 #from smarttypes.utils.log_handle import LogHandle
 #log_handle = LogHandle('twitter_group.log')
@@ -52,7 +52,7 @@ class TwitterGroup(MongoBaseModel):
     
     @classmethod
     def get_active_groups(cls, count=False):
-        results = cls.collection().find({'scores_users':{'$ne':[]}})
+        results = cls.collection().find({'scores_users':{'$ne':[]}, 'tag_cloud':{'$ne':[]}})
         if count:
             return results.count()
         else:
@@ -94,31 +94,42 @@ class TwitterGroup(MongoBaseModel):
         all_words = set()
         for group in cls.get_active_groups():
             group_wordcounts[group.group_index] = (group, collections.defaultdict(int))
-            for score, user in group.top_users(num_users=20):
+            for score, user in group.top_users(num_users=25):
                 if not user.description:
                     continue
                 regex = re.compile(r'[%s\s]+' % re.escape(string.punctuation))
+                user_words = set()
                 for word in regex.split(user.description.strip()):
                     word = string.lower(word)
-                    if len(word) > 2:
+                    if len(word) > 2 and word not in user_words:
+                        user_words.add(word)
                         all_words.add(word)
-                        group_wordcounts[group.group_index][1][word] += 1
+                        group_wordcounts[group.group_index][1][word] += score
                         
         print "starting avg_wordcounts loop"            
         avg_wordcounts = {} #{word:avg}
+        sum_words = []#[(sum,word)]
         for word in all_words:
             group_usage = []
             for group_index in group_wordcounts:
                 group_usage.append(group_wordcounts[group_index][1][word])
             avg_wordcounts[word] = numpy.average(group_usage)
+            sum_words.append((numpy.sum(group_usage), word))
+    
+        print "starting delete stop words loop"
+        for group_index in group_wordcounts:
+            for word in text_parsing.STOPWORDS:
+                if word in group_wordcounts[group_index][1]:
+                    del group_wordcounts[group_index][1][word]     
                 
         print "starting groups_unique_words loop"
         groups_unique_words = {} #{group_index:[(score, word)]}
         for group_index in group_wordcounts:
             groups_unique_words[group_index] = []
             for word, times_used in group_wordcounts[group_index][1].items():
-                usage_diff = times_used - avg_wordcounts[word]
-                groups_unique_words[group_index].append((usage_diff, word))
+                if times_used > 2:
+                    usage_diff = times_used - avg_wordcounts[word]
+                    groups_unique_words[group_index].append((usage_diff, word))
         
         print "starting save tag_cloud loop"
         for group_index, unique_scores in groups_unique_words.items():

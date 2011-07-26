@@ -21,6 +21,7 @@ def root_user(request):
     return WebResponse(
         return_dict={
             'root_user':root_user,
+            'TwitterGroup':TwitterGroup,
         }
     )
 

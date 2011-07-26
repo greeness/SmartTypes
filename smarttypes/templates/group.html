@@ -18,7 +18,11 @@
         <h1>
             ${twitter_group.tag_cloud_display()}
         </h1>
-    
+
+        <p>
+            <a href="/group">Explore another random group</a>
+        </p>
+        
         <table class="results">
             <tr>
                 <th>Score</th>
@@ -27,7 +31,7 @@
                 <th>Location</th>
                 <th>Link</th>
             </tr>
-            <tr py:for="top_user_tup in twitter_group.top_users()">
+            <tr py:for="top_user_tup in twitter_group.top_users(num_users=25)">
                 <td>${'%.3f' % top_user_tup[0]}</td>
                 <td>
                     <a href="/user?user_id=${top_user_tup[1].twitter_id}">

@@ -38,15 +38,14 @@
         </div>
 
         <div style="float:right;text-align:right;">
-            <div style="margin-top:65px;">
+            <div style="margin-top:68px;">
                 <a href="/cluster_your_network" 
-                     class="${'active' if active_tab == 'cluster_your_network' else ''}">Cluster your twitter universe</a>
+                     class="${'active' if active_tab == 'cluster_your_network' else ''}">Cluster your network</a>
                      
                 <span py:if="defined('root_user')" py:strip="">
                     <span style="padding:0 5px;color:#cccccc; ">|</span>
                     <a href="/root_user?screen_name=${root_user.screen_name}" 
-                         class="${'active' if active_tab in ['root_user', 'user', 'group'] else ''}">
-                        Root user: ${root_user.screen_name}</a>
+                         class="${'active' if active_tab in ['root_user', 'user', 'group'] else ''}">${root_user.screen_name}</a>
                 </span>
             </div>
         </div><!--links block-->

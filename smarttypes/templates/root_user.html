@@ -14,10 +14,24 @@
 <body>
 
     <div style="text-align:center;">
-        <p>Clustered 7,900 users related to ${root_user.screen_name} into 40 groups.</p>
+        <p>Clustered 7,876 users related to ${root_user.screen_name} into 39 groups.</p>
         <p>
             <a href="/group">Explore a random group</a>
         </p>
+        
+        <table class="results">
+            <tr>
+                <th>Tags</th>
+            </tr>        
+        
+            <tr py:for="group in TwitterGroup.get_active_groups()">
+                <td>
+                    <a href="/group?group_index=${group.group_index}">
+                       ${group.tag_cloud_display()}
+                    </a>
+                </td>
+            </tr>
+        </table>        
         
     </div>
 

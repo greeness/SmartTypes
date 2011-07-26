@@ -31,7 +31,7 @@ default_title = '%s - %s' % (site_name, site_mantra)
 site_description = """
 Cluster your twitter universe into niche communities.
 Explore new lands, and meet new people.
-Learn what these unique cultures deem important.
+Learn what these cultures deem important.
 """
 site_description = site_description.strip()
 

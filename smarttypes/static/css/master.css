@@ -1,17 +1,19 @@
 
 /*everything*/
 
-    *{margin:0;padding:0;font-size:18px;}
+    *{margin:0;padding:0;font-size:16px;}
       
 /*root*/
 
-      #page_wrapper{font-family:arial,sans-serif;color:#666666;line-height:135%;}
+      #page_wrapper{font-family:Monaco,Consolas,"DejaVu Sans Mono","Lucida Console",Inconsolata,Arial,sans-serif;color:#666666;line-height:135%;}
 
+      /*arial,sans-serif;*/
+      
 /*headers */
     
     h1,.h1, h2,.h2, h3,.h3, h4,.h4{font-weight:bold;margin:0 20px 20px 20px;color:#333333;}
-    h1,.h1{font-size:20px;}
-    h2,.h2{font-size:18px;}
+    h1,.h1{font-size:18px;}
+    h2,.h2{font-size:16px;}
 
 /*paragraphs*/
     
@@ -88,7 +90,7 @@ body{
     text-align:center;
     max-width:800px;
     margin:4px auto;
-    padding: 55px 20px;
+    padding: 35px 20px;
 }  
 
 #footer{
