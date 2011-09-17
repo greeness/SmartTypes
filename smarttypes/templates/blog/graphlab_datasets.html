@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:py="http://genshi.edgewall.org/"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    lang="en">
+
+<xi:include href="../master.html" />      
+<head>
+
+</head>                    
+
+<body>
+
+<h1>Graphlab datasets</h1>
+
+<p>
+<a href="http://graphlab.org/">Graphlab</a> is the workhorse behind the smarttypes twitter clustering algorithm.
+This page houses an example dataset, and short description of the data in the dataset. 
+</p>
+
+<p>
+  <a href="http://www.smarttypes.org/static/graphlab_pmf.tar.gz">graphlab_pmf.tar.gz</a> contains two files:
+</p>
+
+<h2>smarttypes_pmf</h2>
+
+<p>
+smarttypes_pmf is an adjacency matrix in graphlab pmf format. 7,876users x 7,876users, and 62,031,376 edges.  
+Each edge is a 1 or 0, indicating whether or not the person on the y axis follows the person on the x axis. 
+Here's <a href="http://en.wikipedia.org/wiki/Adjacency_matrix">a nice description of adjacency matrices on wikipedia</a>.  
+</p>
+
+<p>
+I got the 7,876 users by looking at the people i follow on twitter, and the people they follow.
+See <a href="https://github.com/smarttypes/SmartTypes/blob/master/smarttypes/graphlab/smarttypes_to_graphlab.py">smarttypes_to_graphlab.py</a>
+for more details on going from twitter users to graphlab. 
+</p>
+
+<p>
+The factorization took 3421.6s on a ec2 High-CPU Extra Large Instance.
+</p>
+
+<p>
+./pmf smarttypes_pmf 11 --float=true
+--scheduler="round_robin(max_iterations=10,block_size=1)" --ncpus=7
+--binaryoutput=true --zero=true --D=100 --desired_factor_sparsity=0.8
+--lambda=0.001
+</p>
+
+<p>
+<!--
+<a href="http://www.smarttypes.org/root_user?screen_name=SmartTypes">You can explore the clustering results here.</a>
+-->
+</p>
+
+
+<h2>index_to_twitter_id.pickle</h2>
+
+<p>
+index_to_twitter_id.pickle is a python dictionary mapping a user's position in the graphlab pmf to their respective twitter id.
+This is useful if you want to find out more about the users being clustered.
+See <a href="https://github.com/smarttypes/SmartTypes/blob/master/smarttypes/graphlab/graphlab_to_smarttypes.py">graphlab_to_smarttypes.py</a>
+for more details on going from graphlab to the actual twitter user.  
+</p>
+
+<p>
+Shoot me an email @ hello@smarttypes.org w/ any questions.
+</p>
+
+
+</body>                                    
+</html>
+

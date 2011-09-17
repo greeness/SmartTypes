@@ -13,12 +13,14 @@ web_monitor.track('/home/timmyt/projects/smarttypes/smarttypes/templates')
 
 urls = [
     (r'^$', smarttypes.controllers.home),
-    (r'root_user/?$', smarttypes.controllers.root_user),
+   
+    (r'blog/?', smarttypes.controllers.blog),
     
+    (r'root_user/?$', smarttypes.controllers.root_user),
     (r'user/?$', smarttypes.controllers.user),
     (r'group/?$', smarttypes.controllers.group),
     
-    (r'cluster_your_network/?$', smarttypes.controllers.cluster_your_network),
+    (r'sign_in/?$', smarttypes.controllers.sign_in),
     (r'about/?$', smarttypes.controllers.about),
     (r'contact/?$', smarttypes.controllers.contact),
 ]

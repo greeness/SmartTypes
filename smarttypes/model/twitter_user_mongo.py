@@ -1,43 +1,41 @@
 
 
-from smarttypes.model.postgres_base_model import PostgresBaseModel
+from smarttypes.model.mongo_base_model import MongoBaseModel
 from smarttypes.utils.validation_utils import mk_valid_ascii_str
 
 from datetime import datetime, timedelta
 from types import NoneType
 import numpy, random, heapq
 from sets import Set
-import collections
 
 #from smarttypes.utils.log_handle import LogHandle
 #log_handle = LogHandle('twitter_user.log')
 
-class TwitterUser(PostgresBaseModel):
+class TwitterUser(MongoBaseModel):
         
-    table_name = 'twitter_user'
-    table_key = 'twitter_id'
-    table_columns = [
-        'twitter_id',
-        'screen_name',
-        'twitter_account_created',
-        'favourites_count',
-        'protected',
-        'following_count',
-        'location_name',
-        'description',
-        'url',
-        'last_loaded_following_ids',
-        'following_ids',
-        'caused_an_error',
-        #'scores_groups',
-    ]
-    table_defaults = {
-        'last_loaded_following_ids':datetime(2000,1,1),
-        'following_ids':[],
+    collection_name = 'twitter_users'
+    primary_key_name = 'twitter_id'
+    properties = {
+        'twitter_id':{'ok_types':[int]},
+        'screen_name':{'ok_types':[str, unicode]},
+        'twitter_account_created':{'ok_types':[datetime]},
+        'favourites_count':{'ok_types':[int]},
+        'protected':{'ok_types':[bool]},
+        'following_count':{'ok_types':[int]},
+        
+        'location_name':{'ok_types':[str, unicode, NoneType]},
+        'description':{'ok_types':[str, unicode, NoneType]},
+        'url':{'ok_types':[str, unicode, NoneType]},
+        
+        'last_loaded_following_ids':{'ok_types':[datetime], 'default':datetime(1970,1,1)},
+        'following_ids':{'ok_types':[list], 'default':[]},        
+        
+        'caused_an_error':{'ok_types':[datetime, NoneType]},
+        
+        'scores_groups':{'ok_types':[list, NoneType]},
     }
     
-    
-    RELOAD_FOLLOWING_IDS_THRESHOLD = timedelta(days=31)
+    RELOAD_FOLLOWING_IDS_THRESHOLD = timedelta(days=7)
     MAX_FOLLOWING_COUNT = 1000
     TRY_AGAIN_AFTER_FAILURE_THRESHOLD = timedelta(days=31)
     
@@ -57,6 +55,13 @@ class TwitterUser(PostgresBaseModel):
         return return_list
     
     @property
+    def should_we_query_this_user(self):
+        return self.is_last_loaded_following_ids_expired and \
+               self.following_count <= self.MAX_FOLLOWING_COUNT and \
+               self.no_recent_errors and \
+               not self.protected
+    
+    @property
     def is_last_loaded_following_ids_expired(self):
         return self.last_loaded_following_ids < (datetime.now() - self.RELOAD_FOLLOWING_IDS_THRESHOLD)
     
@@ -64,14 +69,7 @@ class TwitterUser(PostgresBaseModel):
     def no_recent_errors(self):
         if self.caused_an_error:
             return (datetime.now() - self.caused_an_error) >= self.TRY_AGAIN_AFTER_FAILURE_THRESHOLD
-        return True        
-    
-    @property
-    def should_we_query_this_user(self):
-        return self.is_last_loaded_following_ids_expired and \
-               self.following_count <= self.MAX_FOLLOWING_COUNT and \
-               self.no_recent_errors and \
-               not self.protected
+        return True    
     
     def get_random_followie_id(self, not_in_this_list=[]):
         random_index = random.randrange(0, len(self.following_ids)) 
@@ -83,7 +81,8 @@ class TwitterUser(PostgresBaseModel):
         
     def get_someone_in_my_network_to_load(self):
         """
-        keep in mind that 'loading' a user means storing all the people they follow
+        keep in mind that 'loading' a user means storing all the people they follow 
+        
         we 'load' self, the people self follows, and the people they follow 
         """
         following_and_expired_list = self.following_and_expired
@@ -93,7 +92,6 @@ class TwitterUser(PostgresBaseModel):
             tried_to_load_these_ids = []
             for i in range(len(self.following_ids)):
                 random_following_id = self.get_random_followie_id(tried_to_load_these_ids)
-                print random_following_id
                 random_following = TwitterUser.get_by_id(random_following_id)
                 random_following_following_and_expired_list = random_following.following_and_expired
                 if random_following_following_and_expired_list:
@@ -106,6 +104,9 @@ class TwitterUser(PostgresBaseModel):
     ##############################################
     def top_groups(self, num_groups=10):
         from smarttypes.model.twitter_group import TwitterGroup
+
+        timer = datetime.now()
+            
         return_list = []
         i = 0
         for score, group_id in sorted(self.scores_groups, reverse=True):
@@ -114,6 +115,11 @@ class TwitterUser(PostgresBaseModel):
             else:
                 break
             i += 1
+            
+        #time_to_execute = datetime.now() - timer
+        #log_handle.log("TwitterUser.top_groups took %s secs to run. significance_level: %s; num_groups: %s" % 
+                       #(time_to_execute.seconds, significance_level, num_groups))
+        
         return return_list
     
     #def group_inferred_following(self, num_users, just_ids=True):
@@ -156,11 +162,17 @@ class TwitterUser(PostgresBaseModel):
     ##############################################    
     @classmethod
     def by_screen_name(cls, screen_name):
-        results = cls.get_by_name_value('screen_name', screen_name)
-        if results:
-            return results[0]
+        result = cls.collection().find_one({'screen_name':screen_name})
+        if result:
+            return cls(**result)
         else:
-            return None
+            return None     
+        
+    @classmethod
+    def get_descriptions_tied_to_groups(cls, screen_name):
+        
+        users_tied_to_groups = []
+   
         
     @classmethod
     def upsert_from_api_user(cls, api_user):

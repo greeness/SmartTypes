@@ -24,19 +24,21 @@ wsgi.py imports this, which should import everything else
 import utils
 import model
 import controllers
+from config import DB_USER, DB_PASSWORD
 
 site_name = 'SmartTypes'
 site_mantra = 'a tool for social discovery'
 default_title = '%s - %s' % (site_name, site_mantra)
 site_description = """
-Cluster your twitter universe into niche communities.
-Explore new lands, and meet new people.
-Learn what these cultures deem important.
+Find, follow, and learn from niche community leaders.
+SmartTypes is a tool for social exploration and discovery. Enjoy!! 
 """
 site_description = site_description.strip()
 
-connection_string = "mongodb://localhost"
-database_name = "smarttypes"
+connection_string = "host=localhost dbname='smarttypes' user='%s' password='%s'" % (DB_USER, DB_PASSWORD)
+
+#connection_string = "mongodb://localhost"
+#database_name = "smarttypes"
 
 
 

@@ -9,8 +9,8 @@ sys.path.insert(0, '/home/timmyt/projects/smarttypes')
 import smarttypes
 from smarttypes.config import *
 
-from smarttypes.utils.log_handle import LogHandle
-log_handle = LogHandle('/home/timmyt/projects/smarttypes/smarttypes/logs/get_twitter_retweets.log')
+#from smarttypes.utils.log_handle import LogHandle
+#log_handle = LogHandle('get_twitter_retweets.log')
 
 from smarttypes.utils.mongo_handle import MongoHandle
 from smarttypes.model.mongo_base_model import MongoBaseModel

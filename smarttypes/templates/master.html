@@ -28,25 +28,25 @@
     <div id="header">
         <div style="float:left;margin-top:2px;">		
             <a href="/">
-                <img src="/static/images/smarttypes_tree_tiny.jpg" alt="${site_name}: ${site_mantra}"/>
+                <img style="padding:0;" src="/static/images/smarttypes_tree_tiny.jpg" alt="${site_name}: ${site_mantra}"/>
             </a>
         </div>
         <div style="float:left;margin-top:2px;">
             <a href="/">
-                <img src="/static/images/smarttypes_logo.png" style="border:none;margin-top:35px;" alt="${site_name}: ${site_mantra}"/>
+                <img src="/static/images/smarttypes_logo.png" style="border:none;margin-top:35px;padding:0;" alt="${site_name}: ${site_mantra}"/>
             </a>
         </div>
 
         <div style="float:right;text-align:right;">
             <div style="margin-top:68px;">
-                <a href="/cluster_your_network" 
-                     class="${'active' if active_tab == 'cluster_your_network' else ''}">Cluster your network</a>
-                     
                 <span py:if="defined('root_user')" py:strip="">
-                    <span style="padding:0 5px;color:#cccccc; ">|</span>
                     <a href="/root_user?screen_name=${root_user.screen_name}" 
-                         class="${'active' if active_tab in ['root_user', 'user', 'group'] else ''}">${root_user.screen_name}</a>
+                         class="${'active' if active_tab in ['root_user', 'user', 'group'] else ''}">Explore</a>
+                    <span style="padding:0 5px;color:#cccccc; ">|</span>
                 </span>
+                <a href="/sign_in" class="${'active' if active_tab == 'sign_in' else ''}">Sign in w/ twitter</a>
+                    <span style="padding:0 5px;color:#cccccc; ">|</span>
+                <a href="/blog" class="${'active' if active_tab == 'blog' else ''}">Blog</a>
             </div>
         </div><!--links block-->
 

@@ -1,30 +1,29 @@
-#import psycopg2
+import psycopg2
 from smarttypes.utils.sql_converters import sqlrepr
 
 
 class PostgresHandle(object):
     
-    def __init__(self, database_name):
-        self.database_name = database_name
-        self.conn_st = "host=localhost dbname='%s' user='timmyt' password='urllib2'" % self.database_name        
+    def __init__(self, connection_string):
+        self.connection_string = connection_string      
         
     @property
-    def conn(self):        
-        if '_conn' in self.__dict__:
-            return self._conn
-        else:
-            self._conn = psycopg2.connect(self.conn_st)
-            return self._conn
+    def connection(self):        
+        if not '_connection' in self.__dict__:
+            self._connection = psycopg2.connect(self.connection_string)
+        return self._connection
 
+    
         
-    def execute_query(self, query_string, params={}, return_results=True):
+    def execute_query(self, query_string, params=None, return_results=True, print_qry=False):
+        cursor = self.connection.cursor()
+        params = params if params else {}
+        #sqlrepr_params = {}
+        #for key, value in params.items():
+            #sqlrepr_params[key] = sqlrepr(value)
+        #query_string = query_string % sqlrepr_params
         
-        cursor = self.conn.cursor()        
-        sqlrepr_params = {}
-        for key, value in params.items():
-            sqlrepr_params[key] = sqlrepr(value)    
-            
-        cursor.execute(query_string % sqlrepr_params)        
+        cursor.execute(query_string, params)        
         column_names = cursor.description 
         cursor_results = []
         if return_results:
@@ -41,7 +40,7 @@ class PostgresHandle(object):
         rows = []        
         for cursor_result in cursor_results:
             row = {}
-            for i in range(len_column_names):
+            for i in range(len(column_names)):
                 name = column_names[i][0]
                 value = cursor_result[i]
                 row[name] = value

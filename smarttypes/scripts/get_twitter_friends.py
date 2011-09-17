@@ -9,13 +9,13 @@ sys.path.insert(0, '/home/timmyt/projects/smarttypes')
 import smarttypes
 from smarttypes.config import *
 
-from smarttypes.utils.log_handle import LogHandle
-log_handle = LogHandle('/home/timmyt/projects/smarttypes/smarttypes/logs/get_twitter_friends.log')
+#from smarttypes.utils.log_handle import LogHandle
+#log_handle = LogHandle('get_twitter_friends.log')
 
-from smarttypes.utils.mongo_handle import MongoHandle
-from smarttypes.model.mongo_base_model import MongoBaseModel
-mongo_handle = MongoHandle(smarttypes.connection_string, smarttypes.database_name)
-MongoBaseModel.mongo_handle = mongo_handle
+from smarttypes.utils.postgres_handle import PostgresHandle
+from smarttypes.model.postgres_base_model import PostgresBaseModel
+postgres_handle = PostgresHandle(smarttypes.connection_string)
+PostgresBaseModel.postgres_handle = postgres_handle
 
 import tweepy
 from tweepy import TweepError
@@ -29,32 +29,12 @@ if (MAX_FOLLOWING_COUNT / AVG_PEOPLE_RETURNED_PER_QUERY) > REMAINING_HITS_THRESH
     raise Exception("get_twitter_friends script error: the code assumes this wont happen.")
 
 
-def log_status(msg, short=True):    
-    status_str = msg
-    if not short:
-        remaining_hits, reset_time = get_rate_limit_status(api_handle)
-        status_str = "Cron script get_twitter_friends:\n"
-        status_str += "\tMsg: %s\n"
-        status_str += "\tRemaining hits: %s\n"
-        status_str += "\tThreshold: %s\n"
-        status_str += "\tCurrent time: %s\n"
-        status_str += "\tReset time: %s\n\n"
-        status_str = status_str % (msg, remaining_hits,
-                   REMAINING_HITS_THRESHOLD,
-                   datetime.now().strftime('%x %H:%M'),
-                   reset_time.strftime('%x %H:%M'))
-    #log_handle.log(status_str)
-
-        
 def continue_or_exit(api_handle):
     remaining_hits, reset_time = get_rate_limit_status(api_handle)
     if remaining_hits < REMAINING_HITS_THRESHOLD:
-        log_status("Exit!", False)
         raise Exception("remaining_hits less than threshold")
         
-        
 def load_user_and_maybe_the_people_they_follow(api_handle, screen_name):
-    
     print "Attempting to load %s" % screen_name
     continue_or_exit(api_handle)
     
@@ -103,12 +83,16 @@ def load_user_and_maybe_the_people_they_follow(api_handle, screen_name):
         following_ids.append(model_following.twitter_id)
         
     model_user.save_following_ids(following_ids)
+    postgres_handle.connection.commit()
     return model_user
 
 
 if __name__ == "__main__":
     
-    args_dict = eval(sys.argv[1])
+    if not len(sys.argv) > 1:
+        args_dict = {'screen_name':'SmartTypes'}
+    else:
+        args_dict = eval(sys.argv[1])
     screen_name = args_dict['screen_name']
     
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)

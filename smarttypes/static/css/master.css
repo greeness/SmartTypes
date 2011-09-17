@@ -5,13 +5,13 @@
       
 /*root*/
 
-      #page_wrapper{font-family:Monaco,Consolas,"DejaVu Sans Mono","Lucida Console",Inconsolata,Arial,sans-serif;color:#666666;line-height:135%;}
+      #page_wrapper{font-family:Arial,sans-serif;color:#666666;line-height:135%;}
 
       /*arial,sans-serif;*/
       
 /*headers */
     
-    h1,.h1, h2,.h2, h3,.h3, h4,.h4{font-weight:bold;margin:0 20px 20px 20px;color:#333333;}
+    h1,.h1, h2,.h2, h3,.h3, h4,.h4{font-weight:bold;margin:15px 0;color:#333333;}
     h1,.h1{font-size:18px;}
     h2,.h2{font-size:16px;}
 
@@ -21,7 +21,7 @@
     
 /*lists*/    
     
-    ol, ul{padding:0 0 0 0;margin:0 0;}
+    ol, ul{padding:0 0 0 30px;margin:10px 15px;}
     ol li, ul li{margin:0 0 10px 0;}
     
 /*links*/
@@ -41,7 +41,7 @@
 
     .clear{clear:both;line-height:0px;}
     
-    img{border:none;}
+    img{border:none;padding:20px;}
     
     .blockquote{margin:30px 15px;}    
     .blockquote blockquote{font-style:italic;}
@@ -87,7 +87,7 @@ body{
 #page_body{
     border-top:1px solid #cccccc;
     border-bottom:1px solid #cccccc;
-    text-align:center;
+    text-align:left;
     max-width:800px;
     margin:4px auto;
     padding: 35px 20px;

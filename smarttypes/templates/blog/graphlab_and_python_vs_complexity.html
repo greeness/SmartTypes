@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:py="http://genshi.edgewall.org/"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    lang="en">
+
+<xi:include href="../master.html" />      
+<head>
+
+</head>                    
+
+<body>
+<div style="text-align:left;">
+
+<h1>
+Modeling complexity w/ graphlab and python 
+</h1>
+
+<p>
+I gave 
+<a href="http://python.mirocommunity.org/video/4380/pyohio-2011-using-pymc-to-clus">a talk on complexity and social network analysis</a> 
+@ <a href="http://pyohio.org/">PyOhio 2011</a> in Columbus, OH.
+</p>
+
+<p>
+The main thrust of the talk was/is to inspire curiosity in others.
+</p>
+
+<p>
+Specifically, i want to talk about complex/messy problems, and using <a href="http://graphlab.org/">graphlab</a> and python to help make sense of these problems.
+</p>
+<p>
+My goal wasn't always this clear.
+</p>
+<p>
+Developing the talk, <a href="http://www.smarttypes.org/about">and the project that inspired the talk</a> 
+has been a slow, iterative process.
+
+After listening to feedback from friends, colleagues, and strangers, 
+and after a few rounds of self critique (video is nice that way), i think i have a good handle on what to tweak/add/abandon.  
+</p>
+
+<p>
+I want to give an improved talk @ <a href="http://us.pycon.org/2012/">PyCon 2012</a> in Santa Clara, CA.
+Please shoot me an email @ hello@smarttypes.org w/ any questions, thoughts, criticism.
+</p>
+
+<p>
+In summary, i want to spend more time on the technical meat (although speculations on determinism are likely).
+
+Mainly though, i want to focus on why i choose <a href="http://graphlab.org/">graphlab</a>, how i'm using it, and how it works w/ python.
+The main thing i regret is glossing over graphlab at the end of my talk @ pyohio.
+</p>
+
+<p>
+Graphlab is a modern, open source, machine learning library.
+<a href="http://videolectures.net/nipsworkshops2010_guestrin_kml/">Here's a nice introduction to graphlab</a> 
+presented by <a href="http://www.cs.cmu.edu/~guestrin/">Carlos Guestrin; project head @ CMU</a>.
+</p>
+
+<h2>Everything is related</h2>
+
+<p>
+The universe is a complex place.
+Everything around us (our weather, economy, back yards, bodies, society, ect...) operate under a cloak of complexity.
+Humans have a long history of trying to make sense of complex phenomenon.
+This has been the goal of reductionist science for thousands of years.
+</p>
+
+<p>
+"Tiger got to hunt, bird got to fly;
+Man got to sit and wonder 'why, why, why?'
+Tiger got to sleep, bird got to land;
+Man got to tell himself he understand." -- Kurt Vonnegut
+</p>
+
+<!--<p>
+This is the book that got be started down this path: <a href="http://www.amazon.com/Chaos-Making-Science-James-Gleick/dp/0140092501">Chaos: Making a New Science</a>.
+I like to lump 
+<a href="http://en.wikipedia.org/wiki/Chaos_theory">chaos theory</a> 
+and 
+<a href="http://en.wikipedia.org/wiki/Complex_systems">modern complex systems research</a> under the same name; 'complexity science'.
+</p>-->
+
+<p>
+Arguably, <a href="http://en.wikipedia.org/wiki/Butterfly_effect">the butterfly effect</a> is complexity science's crowning achievement (thus far anyway).
+Show me another <a href="http://en.wikipedia.org/wiki/The_Butterfly_Effect">complexity inspired movie starring America's man of science, Ashton Kutcher</a>
+and i'll rethink my claim.
+</p>
+
+<p>
+The the butterfly effect is a simple and elegant idea.
+A butterfly flapping it's wings in Casablanca, Morocco can effect the weather in Cleveland, Ohio.
+This is an example used to make a larger point.
+The larger point is: stuff is related.
+</p>
+
+<p>
+Perhaps everything is related.
+If that doesn't melt your mind <a href="http://en.wikipedia.org/wiki/Determinism">read what wikipedia has to say about determinism</a>.
+From August 23 2011:
+"The philosophical argument here would be that the big bang triggered every single action, and possibly mental thought, through the system of cause and effect."
+</p>
+
+<p style="text-align:center;padding-top:20px;">"everything under the sun is in tune"</p>
+
+<p style="text-align:center;">
+<img src="/static/images/blog/dark_side_of_the_moon.png" style="width:200px;padding-top:0;" alt="dark_side_of_the_moon.png"/>
+</p>
+
+<h2>Social network analysis</h2>
+
+<p>
+I can't always do it, sometimes though, i can imagine us all (all us crazy humans) as a single interconnected organism.  
+A lot of other people have had this thought, you've probably heard the term 'the human super organism'.
+</p>
+
+<p>
+From this perspective human social networks have the same properties as any complex system.
+
+<a href="http://en.wikipedia.org/wiki/World_War_I">The assassination of an Austrian archduke can trigger a world war</a>, 
+just like a butterfly in Casablanca can trigger a Cleveland hail storm.
+</p>
+
+<p style="text-align:center;">
+<img src="/static/images/blog/social_network_graph.jpg" style="" alt="social_network_graph.jpg"/>
+</p>
+
+<p>
+Like any complex system, predicting the actions of humans is hard. Machines can help.
+</p>
+
+<p>
+The visualization below is a <a href="http://en.wikipedia.org/wiki/Attractor">Strange attractor</a>, or just attractor.  
+
+It's a computer generated visualization, of a computer generated model, of a real physical system or process.
+
+I'm fond of this image. 
+
+The model illustrated by this strange attractor uses 3 dimensions.
+
+Try to imagine a model w/ a hundred, or a thousand, or a million dimensions.
+
+Now you understand why we need computers.
+</p>
+
+<p style="text-align:center;">
+<img src="/static/images/blog/strange_attractor.jpg" style="" alt="social_network_graph.jpg"/>
+</p>
+
+<h2>Predicting the market</h2>
+
+<p>
+The stock market is a modern battlefield for computer assisted human analysis.
+</p>
+
+<p>
+"Even apart from the instability due to speculation, there is the instability due to the characteristic of human nature that a large proportion of our positive activities depend on spontaneous optimism rather than mathematical expectations." -- John Maynard Keynes
+</p>
+
+<p>
+<a href="http://en.wikipedia.org/wiki/Algorithmic_trading#cite_note-advtrade-4">In 2009, computer driven, algorithmic trading firms accounted for 73% of all US equity trading volume</a>.
+</p>
+
+<p>
+This is the paper that got me interested in social network analysis: 
+<a href="http://arxiv.org/abs/1010.3003">Twitter mood predicts the stock market</a>.
+</p>
+
+<p>
+You may have seen this. If not, you may want to read that again.
+<a href="http://arxiv.org/abs/1010.3003">Twitter mood predicts the stock market</a>.
+That's no small feat.
+The financial industry spends a lot of money on computer algorithms to predict the future.
+A lot of money is really an understatement.
+Why/how is twitter good at predicting the market?
+</p>
+
+
+
+<p>
+I gotta go.
+To be continued!
+</p>
+
+<!--
+
+tech has helped us connect + spread info
+
+tech to make decisions
+
+Examples of computer learning
+ wine
+ movie scripts
+ physics engine
+ twitter perdicts the market - inspirational
+
+computer models
+simulations
+simulate, compare, improve simulation
+
+Get into it
+ netflix prize
+ matrix factorization
+
+ graphlab
+  details on how it works 
+  fast
+  awesome algorithms
+  sparsity
+  andrew ng
+-->
+<p>
+
+
+
+</p>
+
+
+</div>
+</body>                                    
+</html>
+

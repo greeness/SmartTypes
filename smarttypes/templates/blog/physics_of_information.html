@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:py="http://genshi.edgewall.org/"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    lang="en">
+
+<xi:include href="../master.html" />      
+<head>
+
+</head>                    
+
+<body>
+<div style="text-align:left;">
+
+
+<h2>
+First the backstory, my fondness for online social networks
+</h2>
+
+<p>
+I'll start @ an unlikely starting point.
+</p>
+
+<p>
+The book 
+<a href="http://www.audible.com/pd/ref=sr_1_1?asin=B002V5B6I2">
+What Hath God Wrought: The Transformation of America, 1815 - 1848</a>
+describes a shift in the physics of information.  
+
+The physics of information is a cool topic on it's own. I'll suppress the urge right now.
+</p>
+
+<p>
+What Hath God Wrought highlights a story published by a British paper shortly after the telegraph was up and running.
+The story describes a man killing his wife, and boarding a train before the information of his crime spread.
+A description of the man was telegraphed ahead of the train, and the man was caught. 
+</p>
+<p>
+The fact that authorities were able to catch the man isn't very amazing to us.
+But, for people in the mid-1800s, information traveling a million times faster than a train or horse or boat was extraordinary.
+Before the mid-1800s, human digestible information, literally, could not travel faster than a train.
+</p>
+
+<p>
+The book highlights a few other stories like this.
+Andrew Jackson's famous Battle of New Orleans took place after the British surrendered (it takes a long time to send a message by boat). 
+</p>
+
+<p>
+I love the idea of overcoming old physical limitations.
+</p>
+
+<p>
+I also love this: <a href="http://arxiv.org/abs/1010.3003">Twitter mood predicts the stock market</a>.
+</p>
+<p>
+You may have seen this.
+If not, you may want to read that again.
+<a href="http://arxiv.org/abs/1010.3003">Twitter mood predicts the stock market</a>.
+That's no small feat.
+The financial world spends a lot of money on computer algorithms to predict the future.
+A lot of money is really an understatement.
+Why would twitter be so good at predicting the market?
+</p>
+
+<p>
+So, with a growing appreciation for online social networks, i decided to focus the little extra time i had on building a program to analyse twitter, my favorite social network.
+</p>
+
+<h2>
+Biological networks are messy and complicated
+</h2>
+
+<p>
+For some reason or another i decided my first project was going to be clustering my twitter network.
+
+Putting people into similar groups using only their network information (who they follow, and who follows them).
+
+This is called graph clustering or community detection.
+</p>
+
+<p>
+Being a python programmer (i love python's emphasis on simplicity, and its growing adoption in scientific circles) i starting looking for python libraries related to graph clustering. I found <a href="http://networkx.lanl.gov/">networkx</a>.
+</p>
+
+<p>
+I also starting looking for, and following people w/ similar interests on twitter.
+</p>
+
+<p>
+I found a lot of info on networks and graphs.
+
+The networkx community was a great launchpad.  
+See <a href="http://networkx.lanl.gov/overview.html">the networkx overview</a>
+and
+<a href="https://networkx.lanl.gov/trac/wiki/GSoC2011">the networkx GSoC2011 announcement</a>.
+
+Specifically, i read 
+<a href="http://arxiv.org/abs/0906.0612">Community detection in graphs</a> 
+and <a href="http://www.amazon.com/Networks-Introduction-Mark-Newman/dp/0199206651">Newman's Networks: An Introduction</a>.
+
+I learned about network adjacency matrices, and established graph clustering techniques.
+</p>
+
+<p>
+Around this time i also met <a href="http://www.orgnet.com/VKbio.html">Valdis Krebs</a> on twitter.
+</p>
+<p>
+Valdis stressed the messy/nonlinear/complex nature of social networks.
+</p>
+
+<p>
+This was a key moment for me.  
+
+I can't always do it, but sometimes i imagine us all as a crazy, interconnected, super-organism.  
+
+A lot of other people have had this thought, you've probably heard the term 'the human super-organism'.
+
+From this perspective human social networks look like neural networks, or genetic regulatory networks, or the weather, ect...
+
+All these systems are messy, biological, and complex. We need machines to help make sense of these things.
+</p>
+
+<p style="text-align:center;">
+<img src="/static/images/blog/social_network_graph.jpg" style="" alt="social_network_graph.jpg"/>
+</p>
+
+<p>
+The visualization below is a <a href="http://en.wikipedia.org/wiki/Attractor">Strange attractor</a>, or just attractor.  
+
+I'm very fond of this image. 
+
+It's a computer generated visualization, of a computer generated model, of a real physical system or process.
+
+The model illustrated by this strange attractor uses 3 dimensions.
+
+Try to imagine a model w/ a hundred or a thousand or a million dimensions.
+
+Now you understand why we need computers.
+</p>
+
+<p style="text-align:center;">
+<img src="/static/images/blog/strange_attractor.jpg" style="" alt="social_network_graph.jpg"/>
+</p>
+
+
+
+<p>
+I gotta go.
+To be continued!
+</p>
+
+<!--
+
+tech has helped us connect + spread info
+
+tech to make decisions
+
+Examples of computer learning
+ wine
+ movie scripts
+ physics engine
+ twitter perdicts the market - inspirational
+
+computer models
+simulations
+simulate, compare, improve simulation
+
+Get into it
+ netflix prize
+ matrix factorization
+
+ graphlab
+  details on how it works 
+  fast
+  awesome algorithms
+  sparsity
+  andrew ng
+-->
+<p>
+
+
+
+</p>
+
+
+</div>
+</body>                                    
+</html>
+

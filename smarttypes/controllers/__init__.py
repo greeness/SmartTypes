@@ -13,6 +13,18 @@ from smarttypes.model.twitter_user import TwitterUser
 def home(request):
     return WebResponse()
 
+
+@mongo_web_decorator()
+def blog(request):
+    
+    template_path = "blog/home.html"
+    if request.path.find('/',1) > 0: #path looks like /blog/something
+        template_path = "%s.html" % request.path[1:]
+    return_dict = {'active_tab':'blog'}
+    
+    return WebResponse(return_dict=return_dict, template_path=template_path)
+
+
 @mongo_web_decorator()
 def root_user(request):
     
@@ -61,7 +73,7 @@ def group(request):
 
 
 @mongo_web_decorator()
-def cluster_your_network(request):
+def sign_in(request):
     return WebResponse()
 
 @mongo_web_decorator()
