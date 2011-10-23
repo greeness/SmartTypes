@@ -4,3 +4,4 @@ rsync -ra --stats --delete \
 /home/timmyt/projects/smarttypes/smarttypes/ \
 /home/timmyt/projects/smarttypes_github/smarttypes/
 
+cp /home/timmyt/projects/smarttypes/README /home/timmyt/projects/smarttypes_github/README

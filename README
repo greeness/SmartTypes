@@ -17,12 +17,9 @@ Connect SmartTypes with your Twitter account, and we'll 'naturally' cluster your
 A special thanks to the guys at http://www.graphlab.ml.cmu.edu/.  78% of our value comes from their motivation and brilliance. 
 
 SmartTypes also depends on:
- - www.mongodb.org
- - api.mongodb.org/python
  - numpy.scipy.org
  - github.com/tweepy/tweepy
  - code.google.com/p/modwsgi
- - pypi.python.org/pypi/virtualenv
  - www.apache.org
 
 
