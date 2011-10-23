@@ -18,24 +18,30 @@ class TwitterUser(PostgresBaseModel):
     table_key = 'twitter_id'
     table_columns = [
         'twitter_id',
-        'screen_name',
         'twitter_account_created',
-        'favourites_count',
+        'screen_name',
         'protected',
-        'following_count',
+        
+        'time_zone',
+        'lang',
         'location_name',
         'description',
         'url',
+        
         'last_loaded_following_ids',
         'following_ids',
+        'following_count',
+        'followers_count',
+        'statuses_count',
+        'favourites_count',
         'caused_an_error',
+        
         #'scores_groups',
     ]
     table_defaults = {
         'last_loaded_following_ids':datetime(2000,1,1),
         'following_ids':[],
     }
-    
     
     RELOAD_FOLLOWING_IDS_THRESHOLD = timedelta(days=31)
     MAX_FOLLOWING_COUNT = 1000
@@ -46,7 +52,7 @@ class TwitterUser(PostgresBaseModel):
         return self.get_by_ids(self.following_ids)
 
     @property
-    def following_ids_extended(self):
+    def following_following_ids(self):
         return_ids = Set()
         for following in self.following:
             return_ids.add(following.twitter_id)
@@ -96,12 +102,16 @@ class TwitterUser(PostgresBaseModel):
         we try to load self, the people self follows, and the people self follows follows
         so if everyone follows 100 people -- that's 10,001 people 
         """
+        
+        #the people self follows
         following_and_expired_list = self.following_and_expired
         if following_and_expired_list:
             return following_and_expired_list[0]
+        
+        #the people self follows follows
         else:
             tried_to_load_these_ids = []
-            for i in range(len(self.following_ids)):
+            for i in range(len(self.following_ids)): #give up at some point
                 random_following_id = self.get_random_followie_id(tried_to_load_these_ids)
                 print random_following_id
                 random_following = TwitterUser.get_by_id(random_following_id)
@@ -110,6 +120,7 @@ class TwitterUser(PostgresBaseModel):
                     return random_following_following_and_expired_list[0]
                 else:
                     tried_to_load_these_ids.append(random_following_id)
+        
 
     ##############################################
     ##group related stuff
@@ -176,27 +187,43 @@ class TwitterUser(PostgresBaseModel):
     def upsert_from_api_user(cls, api_user):
         if api_user.protected == None:
             api_user.protected = False
-        
+
+        #import pprint
+        #print pprint.pprint(api_user.__dict__)
+            
         model_user = cls.get_by_id(api_user.id)
         if model_user:
             model_user.screen_name = mk_valid_ascii_str(api_user.screen_name)
+            model_user.protected = api_user.protected
+            
+            model_user.time_zone = api_user.time_zone
+            model_user.lang = api_user.lang
             model_user.location_name = mk_valid_ascii_str(api_user.location)
             model_user.description = mk_valid_ascii_str(api_user.description)
-            model_user.url = mk_valid_ascii_str(api_user.url)
+            model_user.url = mk_valid_ascii_str(api_user.url)            
+            
+            model_user.following_count = api_user.friends_count
+            model_user.followers_count = api_user.followers_count
+            model_user.statuses_count = api_user.statuses_count
             model_user.favourites_count = api_user.favourites_count
-            model_user.protected = api_user.protected
-            model_user.following_count = api_user.friends_count 
+            
         else:
             properties = {
                 'twitter_id':api_user.id,
-                'screen_name':mk_valid_ascii_str(api_user.screen_name), 
                 'twitter_account_created':api_user.created_at,
+                'screen_name':mk_valid_ascii_str(api_user.screen_name),                 
+                'protected':api_user.protected,
+                
+                'time_zone':api_user.time_zone,
+                'lang':api_user.lang,
                 'location_name':mk_valid_ascii_str(api_user.location), 
                 'description':mk_valid_ascii_str(api_user.description), 
-                'url':mk_valid_ascii_str(api_user.url), 
-                'favourites_count':api_user.favourites_count,
-                'protected':api_user.protected,
+                'url':mk_valid_ascii_str(api_user.url),
+                
                 'following_count':api_user.friends_count,
+                'followers_count':api_user.followers_count,
+                'statuses_count':api_user.statuses_count,
+                'favourites_count':api_user.favourites_count,
             }
             model_user = cls(**properties)
         model_user.save()

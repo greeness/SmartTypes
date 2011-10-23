@@ -55,7 +55,7 @@ if __name__ == "__main__":
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 
-    monitor_these_user_ids = twitter_user.following_ids_extended[:4000]
+    monitor_these_user_ids = twitter_user.following_following_ids[:4000]
     print "Num of users to monitor: %s" % len(monitor_these_user_ids)
     listener = Listener(monitor_these_user_ids)
     stream = Stream(auth,listener)

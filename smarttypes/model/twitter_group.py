@@ -1,11 +1,11 @@
-from smarttypes.model.mongo_base_model import MongoBaseModel
+from smarttypes.model.postgres_base_model import PostgresBaseModel
 from datetime import datetime, timedelta
 from smarttypes.utils import time_utils, text_parsing
 import re, string, heapq, random, collections, numpy
 #from smarttypes.utils.log_handle import LogHandle
 #log_handle = LogHandle('twitter_group.log')
 
-class TwitterGroup(MongoBaseModel):
+class TwitterGroup(PostgresBaseModel):
         
     collection_name = 'twitter_groups'
     primary_key_name = 'group_index'

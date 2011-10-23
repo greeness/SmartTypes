@@ -34,7 +34,7 @@ def continue_or_exit(api_handle):
     if remaining_hits < REMAINING_HITS_THRESHOLD:
         raise Exception("remaining_hits less than threshold")
         
-def load_user_and_maybe_the_people_they_follow(api_handle, screen_name):
+def load_user_and_the_people_they_follow(api_handle, screen_name):
     print "Attempting to load %s" % screen_name
     continue_or_exit(api_handle)
     
@@ -60,10 +60,6 @@ def load_user_and_maybe_the_people_they_follow(api_handle, screen_name):
         model_user.save_following_ids([])
         return model_user
     
-    if model_user.last_loaded_following_ids >= (datetime.now() - TwitterUser.RELOAD_FOLLOWING_IDS_THRESHOLD):
-        print "\t %s already loaded recently" % screen_name
-        return model_user
-    
     print "Loading the people %s follows" % screen_name    
     following_ids = []
     try:
@@ -81,8 +77,8 @@ def load_user_and_maybe_the_people_they_follow(api_handle, screen_name):
             continue 
         model_following = TwitterUser.upsert_from_api_user(api_following)
         following_ids.append(model_following.twitter_id)
-        
     model_user.save_following_ids(following_ids)
+    
     postgres_handle.connection.commit()
     return model_user
 
@@ -99,10 +95,10 @@ if __name__ == "__main__":
     auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
     api_handle = tweepy.API(auth)
     
-    twitter_user = load_user_and_maybe_the_people_they_follow(api_handle, screen_name)
+    twitter_user = load_user_and_the_people_they_follow(api_handle, screen_name)
     load_this_user = twitter_user.get_someone_in_my_network_to_load()
     while load_this_user:
-        load_user_and_maybe_the_people_they_follow(api_handle, load_this_user.screen_name)
+        load_user_and_the_people_they_follow(api_handle, load_this_user.screen_name)
         load_this_user = twitter_user.get_someone_in_my_network_to_load()
         #load_this_user = None
         
