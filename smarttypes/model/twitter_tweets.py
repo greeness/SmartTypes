@@ -45,15 +45,6 @@ class TwitterUser(PostgresBaseModel):
     def following(self):
         return self.get_by_ids(self.following_ids)
 
-    @property
-    def following_ids_extended(self):
-        return_ids = Set()
-        for following in self.following:
-            return_ids.add(following.twitter_id)
-            for following_following_id in following.following_ids:
-                return_ids.add(following_following_id)
-        return list(return_ids)  
-    
     ##############################################
     ##related to get_someone_in_my_network_to_load
     ##############################################    
@@ -92,9 +83,8 @@ class TwitterUser(PostgresBaseModel):
         
     def get_someone_in_my_network_to_load(self):
         """
-        keep in mind that 'loading' a user means storing all their connections
-        we try to load self, the people self follows, and the people self follows follows
-        so if everyone follows 100 people -- that's 10,001 people 
+        keep in mind that 'loading' a user means storing all the people they follow
+        we 'load' self, the people self follows, and the people they follow 
         """
         following_and_expired_list = self.following_and_expired
         if following_and_expired_list:

@@ -11,10 +11,6 @@ def mongo_web_decorator():
                 #mongo_handle = MongoHandle(smarttypes.connection_string, smarttypes.database_name)
                 #MongoBaseModel.mongo_handle = mongo_handle
                 web_response = controller(request)
-                
-                #if not 'root_user' in web_response.return_dict:
-                    #web_response.return_dict['root_user'] = TwitterUser.by_screen_name('SmartTypes')
-                    
                 response_headers = web_response.get_response_headers()
                 response_string = web_response.get_response_str(controller.__name__)
                 status_code = '200 OK'

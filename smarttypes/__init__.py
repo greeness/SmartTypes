@@ -30,8 +30,8 @@ site_name = 'SmartTypes'
 site_mantra = 'a tool for social discovery'
 default_title = '%s - %s' % (site_name, site_mantra)
 site_description = """
-Find, follow, and learn from niche community leaders.
-SmartTypes is a tool for social exploration and discovery. Enjoy!! 
+Sign in w/ your twitter account and receive a daily email highlighting the people and content that interest you.
+Give us a week, and an active twitter account, and you'll be amazed!!
 """
 site_description = site_description.strip()
 

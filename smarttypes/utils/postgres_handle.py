@@ -1,5 +1,4 @@
 import psycopg2
-from smarttypes.utils.sql_converters import sqlrepr
 
 
 class PostgresHandle(object):
@@ -12,17 +11,11 @@ class PostgresHandle(object):
         if not '_connection' in self.__dict__:
             self._connection = psycopg2.connect(self.connection_string)
         return self._connection
-
-    
         
     def execute_query(self, query_string, params=None, return_results=True, print_qry=False):
-        cursor = self.connection.cursor()
-        params = params if params else {}
-        #sqlrepr_params = {}
-        #for key, value in params.items():
-            #sqlrepr_params[key] = sqlrepr(value)
-        #query_string = query_string % sqlrepr_params
         
+        params = params if params else {}
+        cursor = self.connection.cursor()
         cursor.execute(query_string, params)        
         column_names = cursor.description 
         cursor_results = []

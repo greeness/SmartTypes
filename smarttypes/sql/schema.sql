@@ -13,7 +13,7 @@ create table twitter_user(
     createddate timestamp not null default now(),
     modifieddate timestamp not null default now(),
     twitter_id integer unique not null,
-    screen_name text unique not null,
+    screen_name text not null,
     twitter_account_created timestamp,
     favourites_count integer,
     protected boolean,
@@ -23,7 +23,7 @@ create table twitter_user(
     url text,
     last_loaded_following_ids timestamp default '2000-1-1',
     following_ids integer[],
-    caused_an_error boolean
+    caused_an_error timestamp
 );
 
 CREATE TRIGGER twitter_user_modified BEFORE UPDATE

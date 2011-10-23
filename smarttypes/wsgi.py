@@ -16,7 +16,7 @@ urls = [
    
     (r'blog/?', smarttypes.controllers.blog),
     
-    (r'root_user/?$', smarttypes.controllers.root_user),
+    (r'logged_in_user/?$', smarttypes.controllers.logged_in_user),
     (r'user/?$', smarttypes.controllers.user),
     (r'group/?$', smarttypes.controllers.group),
     
@@ -31,7 +31,7 @@ def application(environ, start_response):
         match = re.search(regex, path)
         if match:
             request = Request(environ)
-            try:                
+            try:
                 status_code, response_headers, body = controller(request)
                 start_response(status_code, response_headers)
                 return body

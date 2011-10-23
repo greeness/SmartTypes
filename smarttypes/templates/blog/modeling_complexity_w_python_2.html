@@ -1,0 +1,291 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:py="http://genshi.edgewall.org/"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    lang="en">
+
+<xi:include href="../master.html" />      
+<head>
+
+</head>                    
+
+<body>
+<div style="text-align:left;">
+
+<h1>
+Modeling complexity w/ python (part 2)
+</h1>
+
+<p>
+<a href="/blog/modeling_complexity_w_python">Part 1 of our journey</a> takes an abstract look @ complexity, determinism, and probabilistic graphical models.
+We then turn our attention to human social networks, and the growing inertia around social network analysis.
+</p>
+
+<blockquote>
+<p>"The Quality which creates the world emerges as a relationship between man and his experience. He is a participant in the creation of all things. The measure of all things." -- Robert Pirsig</p>
+</blockquote>
+
+<p>
+The point of this post is to move from crazy philosophy to actual code.
+The final piece of the puzzle (the actual working implementation and source code) 
+will be available @ <a href="http://www.smarttypes.org">www.smarttypes.org</a> in Dec 2011.
+We will update <a href="https://github.com/smarttypes/SmartTypes">the github repo</a> along the way.
+</p>
+
+<h2>Finding expert twitter users</h2>
+
+<p>
+We'll focus on twitter, but the design and methods outlined here should work for any online network where people link to people, and people link to content. 
+</p>
+
+<p>
+We have a simple, straightforward goal: 
+Given a search phrase, we want to return the most relevant/influential twitter users for that phrase.
+For example, if we enter the search phrase 'Cleveland Machine Learning' we should get back a list of bad-ass Cleveland geeks.
+</p>
+
+<p>
+There are a lot of ways to approach this problem.
+We could simply index the content each user posts, and return the users with the highest keyword frequency.
+
+We could get more sophisticated, and use 
+<a href="http://en.wikipedia.org/wiki/Tf%E2%80%93idf">term frequency–inverse document frequency (tf–idf)</a>
+to give more weight to uncommon words.
+
+More sophisticated still, we could use a <a href="http://en.wikipedia.org/wiki/Topic_model">topic model</a> to discover latent features (or topics)
+that occur across users.
+</p>
+
+<p>
+In fact, we will use tf–idf and topic models, but we're missing something.
+We're neglecting our most interesting informational asset, the social asset.
+Not long ago, social scientists spent millions to document and study social connections, and how these connections influenced behavior.
+Whether from <a href="http://en.wikipedia.org/wiki/Homophily">Homophily</a> (birds of a feather) or 
+<a href="http://www.nytimes.com/2007/07/26/health/26fat.html">social contagion</a>, 
+we know that like minded people tend to be connected.
+We can also learn a lot about the social hierarchy (who is the most popular within a given clique).
+In short, we want to leverage the social structure of the network and the content. 
+</p>
+
+<p style="text-align:center;">
+ <img src="/static/images/blog/high_level_info_design.jpg" style="width:350px;" alt="high_level_info_design.jpg"/>
+</p>
+
+<h2>
+Getting the data
+</h2>
+
+<p>
+The first step is getting some data to play w/.
+This is trivial if you have the cash.
+Hundreds of social media, data-mining and financial-services companies pay a base rate of up to 
+$360,000 a year for Twitter's information. 
+There are currently two companies licensed to sell twitter data -- 
+<a href="http://gnip.com/">Gnip, in Boulder, Colo.</a> and
+<a href="http://datasift.com/">Datasift in Reading, U.K</a>
+</p>
+
+<p>
+If you don't have the cash, you'll have to work for it.
+<a href="https://github.com/smarttypes/SmartTypes/blob/master/smarttypes/scripts/get_twitter_friends.py">Here's a little script</a> 
+that uses <a href="https://github.com/tweepy/tweepy">tweepy</a> 
+to pull social graph data (who follows who).
+OAuth calls are permitted 350 requests per hour and are measured against the oauth_token used in the request.
+The more oauth_tokens you have (signups to use your app) the more data you can pull.
+Learn more about <a href="https://dev.twitter.com/docs/rate-limiting">twitter rest-api rate limits here</a>.
+</p>
+
+<p>
+Getting actual tweets is a little different.
+You open up a connection, and drink from the stream.
+The default access level allows up to 400 track keywords, 5,000 follow userids and 25 0.1-360 degree location boxes.
+Learn more about <a href="https://dev.twitter.com/docs/streaming-api/methods">twitter streaming-api rate limits here</a>.
+<a href="https://github.com/smarttypes/SmartTypes/blob/master/smarttypes/scripts/get_twitter_retweets.py">Here's an incomplete script to get tweets</a>. 
+</p>
+
+
+
+<h2>Probabilistic Graphical Models and LDA</h2>
+
+<blockquote>
+<p>
+"Graphical models are a marriage between probability theory and graph theory. They provide a natural tool for dealing with two problems that occur throughout applied mathematics and engineering -- uncertainty and complexity -- and in particular they are playing an increasingly important role in the design and analysis of machine learning algorithms. Fundamental to the idea of a graphical model is the notion of modularity -- a complex system is built by combining simpler parts. Probability theory provides the glue whereby the parts are combined, ensuring that the system as a whole is consistent, and providing ways to interface models to data. The graph theoretic side of graphical models provides both an intuitively appealing interface by which humans can model highly-interacting sets of variables as well as a data structure that lends itself naturally to the design of efficient general-purpose algorithms.
+</p>
+<p>
+Many of the classical multivariate probabalistic systems studied in fields such as statistics, systems engineering, information theory, pattern recognition and statistical mechanics are special cases of the general graphical model formalism -- examples include mixture models, factor analysis, hidden Markov models, Kalman filters and Ising models. The graphical model framework provides a way to view all of these systems as instances of a common underlying formalism. This view has many advantages -- in particular, specialized techniques that have been developed in one field can be transferred between research communities and exploited more widely. Moreover, the graphical model formalism provides a natural framework for the design of new systems." --- Michael Jordan, 1998. 
+</p>
+</blockquote>
+
+<!--<p>
+The following is from <a href="http://norvig.com/chomsky.html">Peter Norvig's 'On Chomsky and the Two Cultures of Statistical Learning'</a>,
+referring to Leo Breiman's 2001 paper
+<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.156.4933&amp;rep=rep1&amp;type=pdf">Statistical Modeling: The Two Cultures</a>
+</p>
+
+<blockquote>
+<p>
+"Breiman is inviting us to give up on the idea that we can uniquely model the true underlying form of nature's function from inputs to outputs. 
+Instead he asks us to be satisfied with a function that accounts for the observed data well, and generalizes to new, previously unseen data well, but may be expressed in a complex mathematical form that may bear no relation to the "true" function's form (if such a true function even exists)."
+</p>
+</blockquote>-->
+
+<p>
+Graphical models are used to represent 
+<a href="http://en.wikipedia.org/wiki/Intractability_%28complexity%29#Intractability">intractable</a> probability distributions.
+
+When storing and examining the full joint distribution is intractable (imagine the cartesian product of a thousand random variables) identifying 
+variable dependence and independence reduces the data and processing needed to store and search the model.
+
+Graphical models make probabilistic dependence explicit.  
+Aside from providing an intuitive visualization of the model, they are explicit statements of dependence.  
+</p>
+
+<p>
+<a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation">Latent Dirichlet Allocation (LDA)</a> is an example of a graphical model.
+Learning the various distributions (the set of topics, their associated word probabilities, the topic of each word, and the particular topic mixture of each document) is a problem of Bayesian inference.
+</p>
+
+<h2>Gensim - Vector Space Modeling for Humans</h2>
+
+<p>
+Looking for LDA implementations in python, 
+<a href="http://radimrehurek.com/gensim/index.html">i was pleasantly surprised to find Gensim</a>.
+Gensim is memory independent, distributed implementation made to efficiently process large, web-scale corpora. 
+</p>
+
+<blockquote>
+<p>
+"
+The unsupervised algorithms in gensim, such as Latent Semantic Analysis, Latent Dirichlet Allocation or Random Projections, discover hidden (latent) semantic structure, based on word co-occurrence patterns within a corpus of training documents. Once these statistical patterns are found, any plain text documents can be succinctly expressed in the new, semantic representation, and queried for topical similarity against other documents and so on.
+"
+</p>
+</blockquote>
+
+<h2>Back to our original problem</h2>
+
+<p>
+We will use LDA to cluster our social network.  
+(For brevity's sake i'll simply point to  
+<a href="http://www.machinedlearnings.com/2011/03/lda-on-social-graph.html">this nice tutorial on using LDA on a social graph</a>.)
+This gives use a list of communities.
+Each community is composed of a list of (user_participation_score, user_index) tuples.
+</p>
+
+<pre>
+#communities
+num_communities = 2
+community_lda = gensim.models.ldamodel.LdaModel(social_network, 
+                                                num_topics=num_communities, 
+                                                update_every=0, passes=20)
+communities = community_lda.show_topics(topics=-1, formatted=False)
+</pre>
+
+<p>
+We then iterate through all the content posted by the users in each community, and weight the content w/ the user_participation_score score.
+This gives us community_text for each community weighted by user participation in that community.
+</p>
+
+<pre>
+#map user_corpus to community_text
+community_text = defaultdict(lambda: defaultdict(int))
+for i in range(len(communities)):
+    for user_participation_score, user_index in communities[i]:
+        for word_id, _ in user_corpus[int(user_index)]:
+            community_text[i][word_id] += 1 * user_participation_score
+</pre>
+
+<p>
+We then use 
+<a href="http://radimrehurek.com/gensim/tut2.html#available-transformations">gensim's tfidf (term frequency–inverse document frequency) transformation model</a> to give uncommon words a higher value.
+</p>
+
+<p>
+Finally, we use LDA to find latent topics within the community content.
+</p>
+
+<pre>
+#community_corpus_topics
+num_topics = 3
+topic_lda = gensim.models.ldamodel.LdaModel(
+    community_corpus, id2word=user_corpus_dictionary, 
+    num_topics=num_topics, update_every=0, passes=20)
+topics = topic_lda.show_topics(topics=-1, formatted=False)
+</pre>
+
+<p style="text-align:center;">
+ <img src="/static/images/blog/lda_design.jpg" style="width:350px;" alt="lda_design.jpg"/>
+</p>
+
+<p>
+That's it, we're done w/ our model, now all that's left is to take a search_phrase, convert it to a topic_vector, and compare the search_topic_vector w/ all the community_topic_vectors using 
+<a href="http://radimrehurek.com/gensim/tut3.html">gensim cosine similarity</a>.
+</p>
+
+<p>
+Actually, there's a little more.
+We don't want to pigeonhole ourselves to one community.
+Imagine if our search returns two closely related communities.
+We don't want to just pick one community, and show the members in that community.
+There may be members in the other community that are more relevant than lower ranking members of our first community.
+To handle this we need to multiply our search-vector/topic-vector similarity score w/ the user_participation_score.
+This is the final step.
+</p>
+
+<p style="text-align:center;">
+ <img src="/static/images/blog/lda_search.jpg" style="width:350px;" alt="lda_design.jpg"/>
+</p>
+
+<h2>Conclusion</h2>
+
+<!--
+<p>
+The design detailed here will be the basis for <a href="http://www.smarttypes.org/">www.smarttypes.org: a tool for social discovery</a>.
+The code is and will always be available on <a href="https://github.com/smarttypes/SmartTypes">github</a>.
+Given the amount of data, we're still working on a solution that will scale, the fact that gensim can run across machines will help.
+</p>
+-->
+
+<p>
+We can do more w/ our model.  
+The first thing that comes to mind is incorporating time to see moving trends and predict the future.
+We also need to think about persistence, concurrency, and scaling to support big data. 
+We'll save that for another day.
+The final piece of the puzzle (the actual working implementation and source code) 
+will be available @ <a href="http://www.smarttypes.org">www.smarttypes.org</a> in Dec 2011.
+We will update <a href="https://github.com/smarttypes/SmartTypes">the github repo</a> along the way.
+</p>
+
+<p>
+I hope these posts were an inspiring introduction to complexity, social network analysis, and graphical models.
+If you're interested in this stuff i recommend:
+<ul>
+<li><a href="http://www.around.com/chaos.html">James Gleick's Chaos: Making a new science</a></li>
+<li><a href="http://www.ml-class.org/course/class/index">Andrew Ng's free online machine learning class</a></li>
+<li><a href="http://aima.cs.berkeley.edu/">Russell + Norvig's Artificial Intelligence: A Modern Approach</a></li>
+<li><a href="http://www.amazon.com/Zen-Art-Motorcycle-Maintenance-Inquiry/dp/0553277472">Pirsig's Zen and the Art of Motorcycle Maintenance</a></li>
+</ul> 
+
+
+</p>
+
+
+</div>
+</body>                                    
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

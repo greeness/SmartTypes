@@ -1,0 +1,311 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:py="http://genshi.edgewall.org/"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    lang="en">
+
+<xi:include href="../master.html" />      
+<head>
+
+</head>                    
+
+<body>
+<div style="text-align:left;">
+
+<h1>
+Modeling complexity w/ python (part 1)
+</h1>
+
+<p>
+This post is a derivation of 
+<a href="http://python.mirocommunity.org/video/4380/pyohio-2011-using-pymc-to-clus">a talk i gave on complexity and social network analysis</a> 
+@ <a href="http://pyohio.org/">PyOhio 2011</a> in Columbus, OH.
+</p>
+
+<p>
+The main point of the talk was/is to inspire curiosity in you the reader/audience member!
+</p>
+
+<p>
+Developing the talk, <a href="http://www.smarttypes.org/about">and the project related to the talk</a>, has been a slow journey.
+I enjoy thinking about complexity, and methods/programs to model it.
+The journey then, is the point i guess.
+</p>
+
+<p>
+Specifically, i want to show how <a href="http://en.wikipedia.org/wiki/Graphical_model">graphical models</a> can help us understand complex phenomena.
+After highlighting some high-level ideas/philosophies, i will detail a real-world implementation using 
+<a href="http://radimrehurek.com/gensim/index.html">gensim (an efficient/distributed python LDA implementation)</a>. 
+</p>
+
+<p>
+I hope to give a new rendition of this talk @ <a href="http://us.pycon.org/2012/">PyCon 2012</a> in Santa Clara, CA.
+Please shoot me an email @ hello@smarttypes.org w/ any questions, thoughts, scolding criticism.
+</p>
+
+<h2>Everything is related</h2>
+
+<p>
+The universe is complex.
+Everything around us (our weather, milk, yards, economy, etc...) operate under a veil of complexity.
+We have a long history of trying to tame complexity.
+This has been the goal of reductionist science for thousands of years.
+</p>
+
+<blockquote>
+<p>
+"Tiger got to hunt, bird got to fly;
+Man got to sit and wonder 'why, why, why?'
+Tiger got to sleep, bird got to land;
+Man got to tell himself he understand." -- Kurt Vonnegut
+</p>
+</blockquote>
+
+<!--<p>
+This is the book that got be started down this path: <a href="http://www.amazon.com/Chaos-Making-Science-James-Gleick/dp/0140092501">Chaos: Making a New Science</a>.
+I like to lump 
+<a href="http://en.wikipedia.org/wiki/Chaos_theory">chaos theory</a> 
+and 
+<a href="http://en.wikipedia.org/wiki/Complex_systems">modern complex systems research</a> under the same name; 'complexity science'.
+</p>-->
+
+<p>
+Arguably, <a href="http://en.wikipedia.org/wiki/Butterfly_effect">the butterfly effect</a> is complexity science's crowning achievement.
+Show me another <a href="http://en.wikipedia.org/wiki/The_Butterfly_Effect">complexity inspired movie starring, man of science, Ashton Kutcher</a>
+and i'll rethink that claim.
+</p>
+
+<p>
+The butterfly effect is a simple idea.
+A butterfly fluttering her wings in Casablanca, Morocco can effect the weather in Cleveland, Ohio.
+This is an example used to make a larger point.
+Things are related in weird ways.
+</p>
+
+<p>
+Perhaps everything is related!
+</p>
+
+<p>
+If that doesn't melt your mind, <a href="http://en.wikipedia.org/wiki/Determinism">read what wikipedia has to say about determinism</a>.
+From August 23 2011:
+</p>
+
+<blockquote>
+<p>
+"The philosophical argument here would be that the big bang triggered every single action, and possibly mental thought, through the system of cause and effect."
+</p>
+</blockquote>
+
+<p style="text-align:center;padding-top:20px;">"everything under the sun is in tune"</p>
+
+<p style="text-align:center;">
+<img src="/static/images/blog/dark_side_of_the_moon.png" style="width:200px;padding-top:0;" alt="dark_side_of_the_moon.png"/>
+</p>
+
+<p>
+Also from <a href="http://en.wikipedia.org/wiki/Determinism">the wikipedia article on determinism</a>:
+</p>
+
+<blockquote>
+<p>
+"Mathematical models that are not deterministic because they involve randomness are called stochastic. Because of sensitive dependence on initial conditions, some deterministic models may appear to behave non-deterministically... Such considerations can motivate the consideration of a stochastic model even though the underlying system is governed by deterministic equations."
+</p>
+</blockquote>
+
+<p>
+Even if we could measure and compute everything's influence on everything else, we'd still run into something akin to the 
+<a href="http://en.wikipedia.org/wiki/Uncertainty_principle">Heisenberg uncertainty principle</a>.
+In short, we need to embrace uncertainty!
+</p>
+
+<p>
+[horn_blows] Enter probability!
+</p>
+
+<blockquote>
+<p>
+"Probability provides a way of summarizing the uncertainty that comes from our laziness and ignorance." -- 
+<a href="http://www.ai-class.com">from the text of Stanford's free AI class</a>
+</p>
+</blockquote>
+
+<p> 
+The evolution of a seemingly random process can be modeled by a graph of related 
+<a href="http://www.khanacademy.org/video/introduction-to-random-variables?playlist=Probability">random variables</a> (probability distributions).
+This is know as <a href="http://en.wikipedia.org/wiki/Graphical_model">graphical modeling</a>, and turns out to be a great way to model complexity.
+</p>
+
+<h2>Why we need machines</h2>
+
+<p>
+The visualization below is a <a href="http://en.wikipedia.org/wiki/Attractor">Strange attractor</a>.
+It's a computer generated visualization, of a computer generated model, of a real physical system or process.
+I'm fond of this image. 
+</p>
+
+<p>
+Try to imagine this picture as a
+<a href="http://en.wikipedia.org/wiki/Joint_probability_distribution">joint probability distribution</a>
+of two related random variables (two variables because one axis holds the probability measure).
+</p>
+
+<p style="text-align:center;">
+<img src="/static/images/blog/strange_attractor.jpg" style="" alt="social_network_graph.jpg"/>
+</p>
+
+<p>
+Now try to imagine a joint probability distribution with 10, 100, or 1,000 random variables. 
+</p>
+
+<p>
+Now you understand why we need computers.
+</p>
+
+<h2>Predicting the actions of humans</h2>
+
+<p>
+The stock market is perhaps the best forum for complexity analysis.
+The stakes are high, and slight advantages equate to big $$$$.
+</p>
+
+<!--<p>
+<a href="http://en.wikipedia.org/wiki/Algorithmic_trading#cite_note-advtrade-4">In 2009, computer driven, algorithmic trading firms accounted for 73% of all US equity trading volume</a>.
+</p>-->
+
+<blockquote>
+<p>
+"Even apart from the instability due to speculation, there is the instability due to the characteristic of human nature that a large proportion of our positive activities depend on spontaneous optimism rather than mathematical expectations." -- John Maynard Keynes
+</p>
+</blockquote>
+
+<p style="text-align:center;">
+<img src="/static/images/blog/runningbulls.jpg" style="" alt="runningbulls.jpg"/>
+</p>
+
+<p>
+This is the paper that got me interested in social network analysis:
+<a href="http://arxiv.org/abs/1010.3003">Twitter mood predicts the stock market</a>.
+You may have seen this. If not, you may want to read that again.
+</p>
+
+<p>
+Derwent Capital Markets, an investment firm in London, built a $40 million hedge fund around the idea.
+After its first full month of trading in July, the fund out-performed the Standard &amp; Poor's 500 for that month, returning 1.85% while the index fell 2.2%.
+</p>
+
+<p>
+No small feat!
+The financial industry spends a lot of money on methods to predict the future.
+A lot of money is really an understatement.
+How/why is twitter good at predicting the market?
+</p>
+
+
+<h2>Human social networks</h2>
+
+<p>
+Imagine all us crazy humans as a single, interconnected system.  
+A lot of people have had this thought, you've probably heard the term 'the human super organism'.
+</p>
+
+<p>
+Taken in aggregate, the human super organism is an amazing analytical machine.
+We experience, categorize, learn, and teach.
+In this way we gain collective knowledge over time.
+</p>
+
+<blockquote>
+<p>"The Quality which creates the world emerges as a relationship between man and his experience. He is a participant in the creation of all things. The measure of all things." -- Robert Pirsig</p>
+</blockquote>
+
+<!--
+<p>
+<a href="http://en.wikipedia.org/wiki/World_War_I">The assassination of an Austrian Archduke can trigger a world war</a>, 
+the same way a Moroccan butterfly can trigger an Ohio hail storm.
+</p>
+-->
+
+<p style="text-align:center;">
+ <img src="/static/images/blog/social_network_graph.jpg" style="" alt="social_network_graph.jpg"/>
+</p>
+
+<h2>Online social networks</h2>
+
+<p>
+The web lets us experience, categorize, learn, and teach w/ great speed and ease.
+We're still discovering what this means.
+Here are a few of many examples:
+</p>
+
+<p>
+The following is from 
+<a href="http://online.wsj.com/article_email/SB10001424052970204138204576598942105167646-lMyQjAxMTAxMDAwMzEwNDMyWj.html">
+a WSJ article on Virginia's magnitude 5.8 earthquake that hit last August
+</a>: 
+</p>
+
+<blockquote>
+<p>
+Never have scientists had so much readily accessible, real-time data about what people say...
+Twitter texts are as timely as a pulse beat and, taken together, automatically compile the raw material of social history.
+</p>
+
+<p>
+As Twitter's message traffic has grown explosively, so has the scientific appetite for the insights the data can yield. Dozens of new scholarly studies over the past 18 months by computer-network analysts and sociologists have plumbed the public torrents of data made available by Twitter through special links with the company's computer servers. This research has harnessed the service to monitor political activity and employee morale, track outbreaks of flu and food poisoning, map fluctuations in moods around the world, predict box-office receipts for new movies, and get a jump on changes in the stock market.
+</p>
+
+</blockquote>
+
+<p>
+This is from <a href="https://www.fbo.gov/index?s=opportunity&amp;mode=form&amp;id=6ef12558b44258382452fcf02942396a&amp;tab=core&amp;_cview=0">
+the DARPA Social Media in Strategic Communication RFP
+</a>:
+</p>
+
+<blockquote>
+<p>
+The general goal of the Social Media in Strategic Communication (SMISC) program is to develop 
+a new science of social networks built on an emerging technology base.  In particular, SMISC 
+will develop automated and semi‐automated operator support tools and techniques for the 
+systematic and methodical use of social media at data scale and in a timely fashion to 
+accomplish four specific program goals: 
+</p>
+
+<ol>
+<li>
+Detect, classify, measure and track the (a) formation, development and spread of ideas 
+and concepts (memes), and (b) purposeful or deceptive messaging and misinformation.
+</li>
+<li> 
+Recognize persuasion campaign structures and influence operations across social media 
+sites and communities.  
+</li>
+<li>
+Identify participants and intent, and measure effects of persuasion campaigns.  
+</li>
+<li>
+Counter messaging of detected adversary influence operations. 
+</li>
+</ol>
+</blockquote>
+
+<p>
+That's right, "Counter messaging".
+It's not just about listening, it's also about influence! 
+</p>
+
+<h2>To be continued</h2>
+<p>
+OK, that sets the stage for implementation.
+<a href="/blog/modeling_complexity_w_python_2">Our next post</a> 
+will move from crazy philosophy to actual code.
+</p>
+
+
+</div>
+</body>                                    
+</html>
+

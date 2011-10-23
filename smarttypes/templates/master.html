@@ -39,24 +39,30 @@
 
         <div style="float:right;text-align:right;">
             <div style="margin-top:68px;">
-                <span py:if="defined('root_user')" py:strip="">
-                    <a href="/root_user?screen_name=${root_user.screen_name}" 
-                         class="${'active' if active_tab in ['root_user', 'user', 'group'] else ''}">Explore</a>
+                <span py:if="defined('logged_in_user')" py:strip="">
+                    <a href="/logged_in_user?screen_name=${logged_in_user.screen_name}" 
+                         class="${'active' if active_tab in ['logged_in_user', 'user', 'group'] else ''}">Explore</a>
                     <span style="padding:0 5px;color:#cccccc; ">|</span>
                 </span>
-                <a href="/sign_in" class="${'active' if active_tab == 'sign_in' else ''}">Sign in w/ twitter</a>
-                    <span style="padding:0 5px;color:#cccccc; ">|</span>
+                
                 <a href="/blog" class="${'active' if active_tab == 'blog' else ''}">Blog</a>
+                
+                    <span style="padding:0 5px;color:#cccccc; ">|</span>
+                    
+                <a href="/sign_in" class="${'active' if active_tab == 'sign_in' else ''}">Sign in w/ twitter</a>
+                <img src="/static/images/twitter_16_gray.png" style="border:none;padding:0;" alt="twitter logo"/>
             </div>
         </div><!--links block-->
 
         <div class="clear"></div>
     </div><!--end header-->
 
-    <div id="page_body">
-        <!--crap from the child-->
-        <div py:replace="select('*|text()')"></div>
-        <div class="clear"></div>
+    <div id="page_border">
+        <div id="page_body">
+            <!--crap from the child-->
+            <div py:replace="select('*|text()')"></div>
+            <div class="clear"></div>
+        </div>
     </div>
 
     <div id="footer">

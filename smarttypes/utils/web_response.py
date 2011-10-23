@@ -13,47 +13,37 @@ loader = TemplateLoader(
 
 class WebResponse(object):
     
-    def __init__(self, return_str="", return_dict=None, content_type='xhtml', template_path=""):
-        
-        self.return_str = return_str
-        self.return_dict = {} if not return_dict else return_dict
-        self.content_type = content_type
-        self.template_path = template_path
-
-        
+    def __init__(self, request, controller_name, response_dict):
+        self.request = request
+        self.controller_name = controller_name
+        self.response_dict = response_dict
+        self.return_str = response_dict.get('return_str', None)
+        self.content_type = response_dict.get('content_type', 'html')
+                
     def get_response_headers(self):
-
         if self.content_type == 'json':
-            raise Exception('need to hook up simple json')
+            raise Exception('TODO: need to hook up simple json.')
+        return [('Content-Type', 'text/%s; charset=utf-8' % self.content_type)]
 
-        content_type_string = 'html'
-        if self.content_type not in ['xhtml']:
-            content_type_string = self.content_type
-        
-        return [('Content-Type', 'text/'+content_type_string + '; charset=utf-8')]
-    
-
-    def get_response_str(self, page_name=''):
-
+    def get_response_str(self):
         #if there's a string we'll just return that
         if self.return_str:
             return [self.return_str]
         
         #using the template
-        if not 'title' in self.return_dict: self.return_dict['title'] = smarttypes.default_title
+        self.response_dict['site_name'] = smarttypes.site_name
+        self.response_dict['site_mantra'] = smarttypes.site_mantra 
+        self.response_dict['site_description'] = smarttypes.site_description
         
-        if page_name: 
-            if not self.template_path: self.template_path = '%s.html' % page_name
-            if not 'active_tab' in self.return_dict: self.return_dict['active_tab'] = page_name
-        
-        self.return_dict['site_name'] = smarttypes.site_name
-        self.return_dict['site_mantra'] = smarttypes.site_mantra 
-        self.return_dict['site_description'] = smarttypes.site_description
-        
-        template = loader.load(self.template_path)
-        
-        template_with_dict = template.generate(**self.return_dict)
-        
+        if not 'title' in self.response_dict: 
+            self.response_dict['title'] = smarttypes.default_title
+        if not 'template_path' in self.response_dict: 
+            self.response_dict['template_path'] = '%s.html' % self.controller_name
+        if not 'active_tab' in self.response_dict: 
+            self.response_dict['active_tab'] = self.controller_name
+                
+        template = loader.load(self.response_dict['template_path'])
+        template_with_dict = template.generate(**self.response_dict)
         response_str = template_with_dict.render(self.content_type)
         
         return [response_str]
