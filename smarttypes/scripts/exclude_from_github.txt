@@ -4,6 +4,7 @@ docs/
 logs/
 static/wilson_resume.txt
 config.py
+config.py.blank
 graphlab/initial
 graphlab/index_to_twitter_id.pickle
 graphlab/smarttypes_pmf
